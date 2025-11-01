@@ -7,76 +7,132 @@
 #define TOKEN_TYPE_WIDTH 24
 #define MAX_DEBUG_LINE_WIDTH 75
 
-static const char* token_type_to_string(TokenType type) {
+const char* token_type_to_string(TokenType type) {
     switch (type) {
-        case TOKEN_EOF:             return "EOF";                   //done (I think)
-        case TOKEN_IDENTIFIER:      return "IDENTIFIER";            //done (used at least)
-        case TOKEN_NUMBER:          return "NUMBER";                // ^
-        case TOKEN_STRING:          return "STRING";                // |
-        case TOKEN_SYMBOL:          return "SYMBOL";                // |
-        case TOKEN_KEYWORD_FUNC:    return "KEYWORD_FUNC";          //done
-        case TOKEN_KEYWORD_PRINT:   return "KEYWORD_PRINT";         //done
-        case TOKEN_KEYWORD_STR:     return "KEYWORD_STR";           //done
-        case TOKEN_KEYWORD_INT:     return "KEYWORD_INT";           //done
-        case TOKEN_KEYWORD_DOUBLE:  return "KEYWORD_double";        //done
-        case TOKEN_KEYWORD_LIST:    return "KEYWORD_LIST";          //done
-        case TOKEN_KEYWORD_ARRAY:   return "KEYWORD_ARRAY";         //done
-        case TOKEN_IF:              return "IF";                    //done
-        case TOKEN_ELIF:            return "ELIF";                  //done
-        case TOKEN_ELSE:            return "ELSE";                  //done
-        case TOKEN_FOR:             return "FOR";                   //done
-        case TOKEN_WHILE:           return "WHILE";                 //done
-        case TOKEN_OPERATOR_LT:     return "TOKEN_OPERATOR_LT";     //done
-        case TOKEN_OPERATOR_GT:     return "TOKEN_OPERATOR_GT";     //done
-        case TOKEN_OPERATOR_LTE:    return "TOKEN_OPERATOR_LTE";    //done
-        case TOKEN_OPERATOR_GTE:    return "TOKEN_OPERATOR_GTE";    //done
-        case TOKEN_OPERATOR_EQ:     return "TOKEN_OPERATOR_EQ";     //done
-        case TOKEN_OPERATOR_NEQ:    return "TOKEN_OPERATOR_NEQ";    //done
-        case TOKEN_INC:             return "TOKEN_INCREMENT";       //done
-        case TOKEN_DEC:             return "TOKEN_DECREMENT";       //done
-        case TOKEN_PLUS:            return "TOKEN_PLUS";            //done
-        case TOKEN_MINUS:           return "TOKEN_MINUS";           //done
-        case TOKEN_MULT:            return "TOKEN_MULTIPLY";        //done
-        case TOKEN_POW:             return "TOKEN_POWER";           //done
-        case TOKEN_DIV:             return "TOKEN_DIVIDE";          //done
-        case TOKEN_MOD:             return "TOKEN_MODULO";          //done
-        case TOKEN_BIT_AND:         return "TOKEN_BIT_AND";         //done
-        case TOKEN_BIT_OR:          return "TOKEN_BIT_OR";          //done
-        case TOKEN_BIT_XOR:         return "TOKEN_BIT_XOR";         //done
-        case TOKEN_BIT_NOR:         return "TOKEN_BIT_NOR";         //done
-        case TOKEN_BIT_NOT:         return "TOKEN_BIT_NOT";         //done
-        case TOKEN_SHIFT_LEFT:      return "TOKEN_SHIFT_LEFT";      //done
-        case TOKEN_SHIFT_RIGHT:     return "TOKEN_SHIFT_RIGHT";     //done
-        case TOKEN_AND_ASSIGN:      return "TOKEN_AND_ASSIGN";      //done
-        case TOKEN_OR_ASSIGN :      return "TOKEN_OR_ASSIGN";       //done
-        case TOKEN_XOR_ASSIGN:      return "TOKEN_XOR_ASSIGN";      //done
-        case TOKEN_SHL_ASSIGN:      return "TOKEN_SHL_ASSIGN";      //done
-        case TOKEN_SHR_ASSIGN:      return "TOKEN_SHR_ASSIGN";      //done
-        case TOKEN_LOGICAL_AND:     return "TOKEN_LOGICAL_AND";     //done
-        case TOKEN_LOGICAL_OR:      return "TOKEN_LOGICAL_OR";      //done
-        default: return "UNKNOWN";                                  //not needed
+        case TOKEN_EOF:                     return "EOF";
+        case TOKEN_UNKNOWN:                 return "UNKNOWN";
+        
+        case TOKEN_KEYWORD_AUTO:            return "AUTO";
+        case TOKEN_KEYWORD_BREAK:           return "BREAK";
+        case TOKEN_KEYWORD_CASE:            return "CASE";
+        case TOKEN_KEYWORD_CHAR:            return "CHAR";
+        case TOKEN_KEYWORD_CONST:           return "CONST";
+        case TOKEN_KEYWORD_CONTINUE:        return "CONTINUE";
+        case TOKEN_KEYWORD_DEFAULT:         return "DEFAULT";
+        case TOKEN_KEYWORD_DO:              return "DO";
+        case TOKEN_KEYWORD_DOUBLE:          return "DOUBLE";
+        case TOKEN_KEYWORD_ELSE:            return "ELSE";
+        case TOKEN_KEYWORD_ENUM:            return "ENUM";
+        case TOKEN_KEYWORD_EXTERN:          return "EXTERN";
+        case TOKEN_KEYWORD_FLOAT:           return "FLOAT";
+        case TOKEN_KEYWORD_FOR:             return "FOR";
+        case TOKEN_KEYWORD_FUNC:            return "FUNC";
+        case TOKEN_KEYWORD_GOTO:            return "GOTO";
+        case TOKEN_KEYWORD_IF:              return "IF";
+        case TOKEN_KEYWORD_INLINE:          return "INLINE";
+        case TOKEN_KEYWORD_INT:             return "INT";
+        case TOKEN_KEYWORD_LONG:            return "LONG";
+        case TOKEN_KEYWORD_REGISTER:        return "REGISTER";
+        case TOKEN_KEYWORD_RESTRICT:        return "RESTRICT";
+        case TOKEN_KEYWORD_RETURN:          return "RETURN";
+        case TOKEN_KEYWORD_SHORT:           return "SHORT";
+        case TOKEN_KEYWORD_SIGNED:          return "SIGNED";
+        case TOKEN_KEYWORD_SIZEOF:          return "SIZEOF";
+        case TOKEN_KEYWORD_STATIC:          return "STATIC";
+        case TOKEN_KEYWORD_STRUCT:          return "STRUCT";
+        case TOKEN_KEYWORD_SWITCH:          return "SWITCH";
+        case TOKEN_KEYWORD_TYPEDEF:         return "TYPEDEF";
+        case TOKEN_KEYWORD_UNION:           return "UNION";
+        case TOKEN_KEYWORD_UNSIGNED:        return "UNSIGNED";
+        case TOKEN_KEYWORD_VAR:             return "VAR";
+        case TOKEN_KEYWORD_VOID:            return "VOID";
+        case TOKEN_KEYWORD_VOLATILE:        return "VOLATILE";
+        case TOKEN_KEYWORD_WHILE:           return "WHILE";
+        case TOKEN_KEYWORD_BOOL:            return "_BOOL";
+        case TOKEN_KEYWORD_COMPLEX:         return "_COMPLEX";
+        case TOKEN_KEYWORD_IMAGINARY:       return "_IMAGINARY";
+    
+        case TOKEN_OPERATOR_PLUS:           return "PLUS";
+        case TOKEN_OPERATOR_MINUS:          return "MINUS";
+        case TOKEN_OPERATOR_STAR:           return "STAR";
+        case TOKEN_OPERATOR_SLASH:          return "SLASH";
+        case TOKEN_OPERATOR_PERCENT:        return "PERCENT";
+        case TOKEN_OPERATOR_INCREMENT:      return "INCREMENT";
+        case TOKEN_OPERATOR_DECREMENT:      return "DECREMENT";
+        case TOKEN_OPERATOR_ASSIGN:         return "ASSIGN";
+        case TOKEN_OPERATOR_PLUSASSIGN:     return "PLUS_ASSIGN";
+        case TOKEN_OPERATOR_MINUSASSIGN:    return "MINUS_ASSIGN";
+        case TOKEN_OPERATOR_STARASSIGN:     return "STAR_ASSIGN";
+        case TOKEN_OPERATOR_SLASHASSIGN:    return "SLASH_ASSIGN";
+        case TOKEN_OPERATOR_PERCENTASSIGN:  return "PERCENT_ASSIGN";
+        case TOKEN_OPERATOR_EQUAL:          return "EQUAL";
+        case TOKEN_OPERATOR_NEQUAL:         return "NOT_EQUAL";
+        case TOKEN_OPERATOR_GREATER:        return "GREATER";
+        case TOKEN_OPERATOR_LOWER:          return "LOWER";
+        case TOKEN_OPERATOR_GEQ:            return "GREATER_EQUAL";
+        case TOKEN_OPERATOR_LEQ:            return "LOWER_EQUAL";
+        case TOKEN_OPERATOR_NOT:            return "NOT";
+        case TOKEN_OPERATOR_AND:            return "AND";
+        case TOKEN_OPERATOR_OR:             return "OR";
+        case TOKEN_OPERATOR_AMP:            return "AMPERSAND";
+        case TOKEN_OPERATOR_BITOR:          return "BIT_OR";
+        case TOKEN_OPERATOR_BITXOR:         return "BIT_XOR";
+        case TOKEN_OPERATOR_BITNOT:         return "BIT_NOT";
+        case TOKEN_OPERATOR_BITSHL:         return "SHL";
+        case TOKEN_OPERATOR_BITSHR:         return "SHR";
+        case TOKEN_OPERATOR_BITANDASSIGN:   return "AND_ASSIGN";
+        case TOKEN_OPERATOR_BITORASSIGN:    return "OR_ASSIGN";
+        case TOKEN_OPERATOR_BITXORASSIGN:   return "BITXOR_ASSIGN";
+        case TOKEN_OPERATOR_BITSHLASSIGN:   return "SHL_ASSIGN";
+        case TOKEN_OPERATOR_BITSHRASSIGN:   return "SHR_ASSIGN";
+        case TOKEN_OPERATOR_POINT:          return "POINT";
+        case TOKEN_OPERATOR_ARROW:          return "ARROW";
+        case TOKEN_OPERATOR_ELLIPSIS:        return "ELLIPSIS";
+    
+        case TOKEN_LPAREN:                  return "LEFT_PARENTHESIS";
+        case TOKEN_RPAREN:                  return "RIGHT_PARENTHESIS";
+        case TOKEN_LBRACKET:                return "LEFT_BRACKET";
+        case TOKEN_RBRACKET:                return "RIGHT_BRACKET";
+        case TOKEN_LBRACE:                  return "LEFT_BRACE";
+        case TOKEN_RBRACE:                  return "RIGHT_BRACE";
+    
+        case TOKEN_COMMA:                   return "COMMA";
+        case TOKEN_COLON:                   return "COLON";
+        case TOKEN_SEMICOLON:               return "SEMICOLON";
+        case TOKEN_QUESTION:                return "QMARK";
+        case TOKEN_HASH:                    return "HASH";
+        
+        case TOKEN_IDENTIFIER:              return "IDENTIFIER";
+        
+        case TOKEN_LITERAL_STRING:          return "STRING_LITERAL";
+        case TOKEN_LITERAL_CHAR:            return "CHAR_LITERAL";
+        case TOKEN_LITERAL_INT:             return "INT_LITERAL";
+        case TOKEN_LITERAL_FLOAT:           return "FLOAT_LITERAL";
+        default:                            return "UNKNOWN";
     }
 }
 
 static void print_token(Token tok, int debug) {
+    const char* type_str = token_type_to_string(tok.type);
+    int lexeme_len = (int)tok.length;
+    
+    // First, print the left part into a buffer
+    char buffer[256];
+    int n = snprintf(buffer, sizeof(buffer),
+                    "token = { type: %-*s, lexeme: '%.*s'",
+                    TOKEN_TYPE_WIDTH, type_str,
+                    lexeme_len, tok.lexeme);
+
+    // Calculate remaining space until alignment point
+    int padding = MAX_DEBUG_LINE_WIDTH - n;
+    if (padding < 0) padding = 0;
+
     if (debug) {
-        const char* type_str = token_type_to_string(tok.type);
-        int lexeme_len = (int)tok.length;
-        
-        // First, print the left part into a buffer
-        char buffer[256];
-        int n = snprintf(buffer, sizeof(buffer),
-                        "[DEBUG]: token = { type: %-*s, lexeme: '%.*s'",
-                        TOKEN_TYPE_WIDTH, type_str,
-                        lexeme_len, tok.lexeme);
-
-        // Calculate remaining space until alignment point
-        int padding = MAX_DEBUG_LINE_WIDTH - n;
-        if (padding < 0) padding = 0;
-
-        // Print final aligned output
-        printf("%s%*s}\n", buffer, padding, "");
+        printf("[DEBUG]: %s%*s}\n", buffer, padding, "");
     }
+    FILE *tokfile = fopen("list.tok", "a");
+    fprintf(tokfile, "%s, \"%.*s\";\n", type_str, lexeme_len, tok.lexeme);
+    fclose(tokfile);
 }
 
 // Lexer state: source pointer and current position
@@ -96,10 +152,6 @@ static void advance() {
 void lexer_init(const char *source_code) {
     src = source_code;
     pos = 0;
-}
-
-void lexer_cleanup(void) {
-    // nothing to do
 }
 
 static void skip_whitespace() {
@@ -126,7 +178,7 @@ Token lexer_next_token(int debug) {
 
     const char *start = &src[pos];
 
-    // Identifier or keyword
+    /* Identifiers and keywords */
     if (isalpha(current_char()) || current_char() == '_') {
         while (isalnum(current_char()) || current_char() == '_') advance();
         tok.type = TOKEN_IDENTIFIER;
@@ -134,48 +186,165 @@ Token lexer_next_token(int debug) {
         tok.length = &src[pos] - start;
 
         // Keywords check
-        if (tok.length == 4 && strncmp(start, "func", 4) == 0)
-            tok.type = TOKEN_KEYWORD_FUNC;
-        else if (tok.length == 5 && strncmp(start, "print", 5) == 0)
-            tok.type = TOKEN_KEYWORD_PRINT;
-        else if (tok.length == 3 && strncmp(start, "str", 3) == 0)
-            tok.type = TOKEN_KEYWORD_STR;
-        else if (tok.length == 3 && strncmp(start, "int", 3) == 0)
-            tok.type = TOKEN_KEYWORD_INT;
+        if (tok.length == 4 && strncmp(start, "auto", 4) == 0)
+            tok.type = TOKEN_KEYWORD_AUTO;
+        else if (tok.length == 5 && strncmp(start, "break", 5) == 0)
+            tok.type = TOKEN_KEYWORD_BREAK;
+        else if (tok.length == 4 && strncmp(start, "case", 4) == 0)    
+            tok.type = TOKEN_KEYWORD_CASE;
+        else if (tok.length == 4 && strncmp(start, "char", 4) == 0)
+            tok.type = TOKEN_KEYWORD_CHAR;
+        else if (tok.length == 5 && strncmp(start, "const", 5) == 0)
+            tok.type = TOKEN_KEYWORD_CONST;
+        else if (tok.length == 8 && strncmp(start, "continue", 8) == 0)
+            tok.type = TOKEN_KEYWORD_CONTINUE;
+            else if (tok.length == 7 && strncmp(start, "default", 7) == 0)
+            tok.type = TOKEN_KEYWORD_DEFAULT;
+        else if (tok.length == 2 && strncmp(start, "do", 2) == 0)
+            tok.type = TOKEN_KEYWORD_DO;
         else if (tok.length == 6 && strncmp(start, "double", 6) == 0)
             tok.type = TOKEN_KEYWORD_DOUBLE;
-        else if (tok.length == 4 && strncmp(start, "list", 4) == 0)
-            tok.type = TOKEN_KEYWORD_LIST;
-        else if (tok.length == 5 && strncmp(start, "array", 5) == 0)
-            tok.type = TOKEN_KEYWORD_ARRAY;
-        else if (tok.length == 2 && strncmp(start, "if", 2) == 0)
-            tok.type = TOKEN_IF;
-        else if (tok.length == 4 && strncmp(start, "elif", 4) == 0)
-            tok.type = TOKEN_ELIF;
         else if (tok.length == 4 && strncmp(start, "else", 4) == 0)
-            tok.type = TOKEN_ELSE;
+            tok.type = TOKEN_KEYWORD_ELSE;
+        else if (tok.length == 4 && strncmp(start, "enum", 4) == 0)
+            tok.type = TOKEN_KEYWORD_ENUM;
+        else if (tok.length == 6 && strncmp(start, "extern", 6) == 0)
+            tok.type = TOKEN_KEYWORD_EXTERN;
+        else if (tok.length == 5 && strncmp(start, "float", 5) == 0)
+            tok.type = TOKEN_KEYWORD_FLOAT;
         else if (tok.length == 3 && strncmp(start, "for", 3) == 0)
-            tok.type = TOKEN_FOR;
+            tok.type = TOKEN_KEYWORD_FOR;
+        else if (tok.length == 4 && strncmp(start, "func", 4) == 0)
+            tok.type = TOKEN_KEYWORD_FUNC;
+        else if (tok.length == 4 && strncmp(start, "goto", 4) == 0)
+            tok.type = TOKEN_KEYWORD_GOTO;
+        else if (tok.length == 2 && strncmp(start, "if", 2) == 0)
+            tok.type = TOKEN_KEYWORD_IF;
+        else if (tok.length == 6 && strncmp(start, "inline", 6) == 0)
+            tok.type = TOKEN_KEYWORD_INLINE;
+        else if (tok.length == 3 && strncmp(start, "int", 3) == 0)
+            tok.type = TOKEN_KEYWORD_INT;
+        else if (tok.length == 4 && strncmp(start, "long", 4) == 0)
+            tok.type = TOKEN_KEYWORD_LONG;
+        else if (tok.length == 8 && strncmp(start, "register", 8) == 0)
+            tok.type = TOKEN_KEYWORD_REGISTER;
+        else if (tok.length == 8 && strncmp(start, "restrict", 8) == 0)
+            tok.type = TOKEN_KEYWORD_RESTRICT;
+        else if (tok.length == 3 && strncmp(start, "ret", 3) == 0)
+            tok.type = TOKEN_KEYWORD_RETURN;
+        else if (tok.length == 5 && strncmp(start, "short", 5) == 0)
+            tok.type = TOKEN_KEYWORD_SHORT;
+        else if (tok.length == 6 && strncmp(start, "signed", 6) == 0)
+            tok.type = TOKEN_KEYWORD_SIGNED;
+        else if (tok.length == 6 && strncmp(start, "sizeof", 6) == 0)
+            tok.type = TOKEN_KEYWORD_SIZEOF;
+        else if (tok.length == 6 && strncmp(start, "static", 6) == 0)
+            tok.type = TOKEN_KEYWORD_STATIC;
+        else if (tok.length == 6 && strncmp(start, "struct", 6) == 0)
+            tok.type = TOKEN_KEYWORD_STRUCT;
+        else if (tok.length == 6 && strncmp(start, "switch", 6) == 0)
+            tok.type = TOKEN_KEYWORD_SWITCH;
+        else if (tok.length == 7 && strncmp(start, "typedef", 7) == 0)
+            tok.type = TOKEN_KEYWORD_TYPEDEF;
+        else if (tok.length == 5 && strncmp(start, "union", 5) == 0)
+            tok.type = TOKEN_KEYWORD_UNION;
+        else if (tok.length == 8 && strncmp(start, "unsigned", 8) == 0)
+            tok.type = TOKEN_KEYWORD_UNSIGNED;
+        else if (tok.length == 3 && strncmp(start, "var", 3) == 0)
+            tok.type = TOKEN_KEYWORD_VAR;
+        else if (tok.length == 4 && strncmp(start, "void", 4) == 0)
+            tok.type = TOKEN_KEYWORD_VOID;
+        else if (tok.length == 8 && strncmp(start, "volatile", 8) == 0)
+            tok.type = TOKEN_KEYWORD_VOLATILE;
         else if (tok.length == 5 && strncmp(start, "while", 5) == 0)
-            tok.type = TOKEN_WHILE;
+            tok.type = TOKEN_KEYWORD_WHILE;
+        else if (tok.length == 5 && strncmp(start, "_Bool", 5) == 0)
+            tok.type = TOKEN_KEYWORD_BOOL;
+        else if (tok.length == 8 && strncmp(start, "_Complex", 8) == 0)
+            tok.type = TOKEN_KEYWORD_COMPLEX;
+        else if (tok.length == 10 && strncmp(start, "_Imaginary", 10) == 0)
+            tok.type = TOKEN_KEYWORD_IMAGINARY;
 
         print_token(tok, debug);
         return tok;
     }
 
-    // Number literal (supports decimals)
+    /* Literals */
+    // Int and float literal
     if (isdigit(current_char())) {
-        int has_dot = 0;
-        while (isdigit(current_char()) || (current_char() == '.' && !has_dot)) {
-            if (current_char() == '.') has_dot = 1;
+        const char *start = &src[pos];
+        int is_float = 0;
+
+        // Handle base prefixes: 0x, 0b, 0
+        if (current_char() == '0') {
             advance();
+            if (tolower(current_char()) == 'x') { // hex
+                advance();
+                while (isxdigit(current_char())) advance();
+                tok.type = TOKEN_LITERAL_INT;
+            } else if (tolower(current_char()) == 'b') { // binary
+                advance();
+                while (current_char() == '0' || current_char() == '1') advance();
+                tok.type = TOKEN_LITERAL_INT;
+            } else if (isdigit(current_char())) { // octal (0...7)
+                while (current_char() >= '0' && current_char() <= '7') advance();
+                tok.type = TOKEN_LITERAL_INT;
+            } else {
+                // plain 0
+                tok.type = TOKEN_LITERAL_INT;
+            }
+        } else {
+            // Decimal or floating point
+            while (isdigit(current_char())) advance();
+
+            // Fractional part
+            if (current_char() == '.') {
+                is_float = 1;
+                advance();
+                while (isdigit(current_char())) advance();
+            }
+
+            // Exponent part
+            if (current_char() == 'e' || current_char() == 'E') {
+                is_float = 1;
+                advance();
+                if (current_char() == '+' || current_char() == '-') advance();
+                while (isdigit(current_char())) advance();
+            }
+
+            tok.type = is_float ? TOKEN_LITERAL_FLOAT : TOKEN_LITERAL_INT;
         }
-        tok.type = TOKEN_NUMBER;
+
+        // Optional suffixes (u, l, f, etc.) — skip but don’t classify yet
+        while (isalpha(current_char())) advance();
+
         tok.lexeme = start;
         tok.length = &src[pos] - start;
         print_token(tok, debug);
         return tok;
     }   
+
+    // Char literal
+    if (current_char() == '\'') {
+        advance(); // skip opening quote
+        const char *character = &src[pos];
+        
+        if (current_char() == '\\') {
+            advance();
+            if (current_char() != '\0') advance();
+        } else if (current_char() != '\0' && current_char() != '\'') {
+            advance();
+        }
+
+        size_t len = &src[pos] - character;
+        
+        if (current_char() == '\'') advance(); // skip closing quote
+        tok.type = TOKEN_LITERAL_CHAR;
+        tok.lexeme = character;
+        tok.length = len;
+        print_token(tok, debug);
+        return tok;
+    }
 
     // String literal
     if (current_char() == '"') {
@@ -187,254 +356,331 @@ Token lexer_next_token(int debug) {
         size_t len = &src[pos] - str_start;
         if (current_char() == '"') advance(); // skip closing quote
 
-        tok.type = TOKEN_STRING;
+        tok.type = TOKEN_LITERAL_STRING;
         tok.lexeme = str_start;
         tok.length = len;
         print_token(tok, debug);
         return tok;
     }
 
-    // Multi-character operators
-    if (current_char() == '=' && src[pos + 1] == '=') {
-        advance(); advance();
-        tok.type = TOKEN_OPERATOR_EQ;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == '!' && src[pos + 1] == '=') {
-        advance(); advance();
-        tok.type = TOKEN_OPERATOR_NEQ;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == '<' && src[pos + 1] == '=') {
-        advance(); advance();
-        tok.type = TOKEN_OPERATOR_LTE;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == '>' && src[pos + 1] == '=') {
-        advance(); advance();
-        tok.type = TOKEN_OPERATOR_GTE;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == '+' && src[pos + 1] == '+') {
-        advance(); advance();
-        tok.type = TOKEN_INC;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    } else if (current_char() == '+') {
-        advance();
-        tok.type = TOKEN_PLUS;
-        tok.lexeme = start;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == '-' && src[pos + 1] == '-') {
-        advance(); advance();
-        tok.type = TOKEN_DEC;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    } else if (current_char() == '-') {
-        advance();
-        tok.type = TOKEN_MINUS;
-        tok.lexeme = start;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-    }
-
-    if (current_char() == '*' && src[pos + 1] == '*') {
-        advance(); advance();
-        tok.type = TOKEN_POW;
-        tok.lexeme = start;
-        tok.length = 2;
-        print_token(tok, debug);
-        return tok;
-    } else if (current_char() == '*') {
-        advance();
-        tok.type = TOKEN_MULT;
-        tok.lexeme = start;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-    }
-
-    if (current_char() == '/') {
-        advance();
-        tok.type= TOKEN_DIV;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-
-    }
-
-    if (current_char() == '%') {
-        advance();
-        tok.type= TOKEN_MOD;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-
-    }
-
-    // Bitwise and shift operators
-    if (current_char() == '&') {
-        if (src[pos + 1] == '&') {
-            // Logical AND (if you want it, like C's &&)
-            advance(); advance();
-            tok.type = TOKEN_LOGICAL_AND;
-            tok.lexeme = start;
+    /* Operators */
+    if (current_char() == '+') {
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "+", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_INCREMENT;
+            tok.lexeme = &src[pos];
             tok.length = 2;
-        } else if (src[pos + 1] == '=') {
-            advance(); advance();
-            tok.type = TOKEN_AND_ASSIGN;
-            tok.lexeme = start;
-            tok.length = 2;
-        } else {
             advance();
-            tok.type = TOKEN_BIT_AND;
-            tok.lexeme = start;
+            advance();
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_PLUSASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_PLUS;
+            tok.lexeme = &src[pos];
             tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
+    if (current_char() == '&') {
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "&", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_AND;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_BITANDASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_AMP;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
         }
         print_token(tok, debug);
         return tok;
     }
 
     if (current_char() == '|') {
-        if (src[pos + 1] == '|') {
-            // Logical OR (if you want it, like C's ||)
-            advance(); advance();
-            tok.type = TOKEN_LOGICAL_OR;
-            tok.lexeme = start;
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "|", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_OR;
+            tok.lexeme = &src[pos];
             tok.length = 2;
-        } else if (src[pos + 1] == '=') {
-            advance(); advance();
-            tok.type = TOKEN_OR_ASSIGN;
-            tok.lexeme = start;
-            tok.length = 2;
-        } else {
             advance();
-            tok.type = TOKEN_BIT_OR;
-            tok.lexeme = start;
-            tok.length = 1;
-        }
-        print_token(tok, debug);
-        return tok;
-    }
-
-    if (current_char() == '^') {
-        if (src[pos + 1] == '=') {
-            advance(); advance();
-            tok.type = TOKEN_XOR_ASSIGN;
-            tok.lexeme = start;
-            tok.length = 2;
-        } else {
             advance();
-            tok.type = TOKEN_BIT_XOR;
-            tok.lexeme = start;
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_BITORASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_BITOR;
+            tok.lexeme = &src[pos];
             tok.length = 1;
+            advance();
         }
         print_token(tok, debug);
         return tok;
     }
 
     if (current_char() == '~') {
-        advance();
-        tok.type = TOKEN_BIT_NOT;
-        tok.lexeme = start;
+        tok.type = TOKEN_OPERATOR_BITNOT;
+        tok.lexeme = &src[pos];
         tok.length = 1;
+        advance();
         print_token(tok, debug);
         return tok;
     }
 
-    if (current_char() == '<' && src[pos + 1] == '<') {
-        if (src[pos + 2] == '=') {
-            advance(); advance(); advance();
-            tok.type = TOKEN_SHL_ASSIGN;
-            tok.lexeme = start;
-            tok.length = 3;
-        } else {
-            advance(); advance();
-            tok.type = TOKEN_SHIFT_LEFT;
-            tok.lexeme = start;
+    if (current_char() == '-') {
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "-", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_DECREMENT;
+            tok.lexeme = &src[pos];
             tok.length = 2;
+            advance();
+            advance();
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_MINUSASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else if (strncmp(next, ">", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_ARROW;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_MINUS;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
         }
         print_token(tok, debug);
         return tok;
     }
 
-    if (current_char() == '>' && src[pos + 1] == '>') {
-        if (src[pos + 2] == '=') {
-            advance(); advance(); advance();
-            tok.type = TOKEN_SHR_ASSIGN;
-            tok.lexeme = start;
-            tok.length = 3;
-        } else {
-            advance(); advance();
-            tok.type = TOKEN_SHIFT_RIGHT;
-            tok.lexeme = start;
+    if (current_char() == '*') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_STARASSIGN;
+            tok.lexeme = &src[pos];
             tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_STAR;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
         }
         print_token(tok, debug);
         return tok;
     }
 
-    // Single-character operators
-    if (current_char() == '<') {
-        advance();
-        tok.type = TOKEN_OPERATOR_LT;
-        tok.lexeme = start;
-        tok.length = 1;
+    if (current_char() == '/') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_SLASHASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_SLASH;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
         print_token(tok, debug);
         return tok;
     }
+
+    if (current_char() == '%') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_PERCENTASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_PERCENT;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
+    if (current_char() == '=') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_EQUAL;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_ASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
+    if (current_char() == '!') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_NEQUAL;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_NOT;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
+    if (current_char() == '^') {
+        const char *next = &src[pos+1];
+        if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_BITXORASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_BITXOR;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
     if (current_char() == '>') {
-        advance();
-        tok.type = TOKEN_OPERATOR_GT;
-        tok.lexeme = start;
-        tok.length = 1;
+        const char *next = &src[pos + 1];
+        if (strncmp(next, ">=", 2) == 0) {
+            tok.type = TOKEN_OPERATOR_BITSHRASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 3;
+            advance();
+            advance();
+            advance();
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_GEQ;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else if (strncmp(next, ">", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_BITSHR;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_GREATER;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
         print_token(tok, debug);
         return tok;
     }
 
-    // Symbols like [ and ]
-    if (current_char() == '[') {
-        advance();
-        tok.type = TOKEN_SYMBOL;
-        tok.lexeme = start;
-        tok.length = 1;
-        print_token(tok, debug);
-        return tok;
-    }
-    if (current_char() == ']') {
-        advance();
-        tok.type = TOKEN_SYMBOL;
-        tok.lexeme = start;
-        tok.length = 1;
+    if (current_char() == '<') {
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "<=", 2) == 0) {
+            tok.type = TOKEN_OPERATOR_BITSHLASSIGN;
+            tok.lexeme = &src[pos];
+            tok.length = 3;
+            advance();
+            advance();
+            advance();
+        } else if (strncmp(next, "=", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_LEQ;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else if (strncmp(next, "<", 1) == 0) {
+            tok.type = TOKEN_OPERATOR_BITSHL;
+            tok.lexeme = &src[pos];
+            tok.length = 2;
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_LOWER;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
         print_token(tok, debug);
         return tok;
     }
 
-    // Single-character symbol fallback
-    tok.type = TOKEN_SYMBOL;
-    tok.lexeme = start;
-    tok.length = 1;
+    if (current_char() == '.') {
+        const char *next = &src[pos + 1];
+        if (strncmp(next, "..", 2) == 0) {
+            tok.type = TOKEN_OPERATOR_ELLIPSIS;
+            tok.lexeme = &src[pos];
+            tok.length = 3;
+            advance();
+            advance();
+            advance();
+        } else {
+            tok.type = TOKEN_OPERATOR_POINT;
+            tok.lexeme = &src[pos];
+            tok.length = 1;
+            advance();
+        }
+        print_token(tok, debug);
+        return tok;
+    }
+
+    /* Symbols */
+    if (current_char() == '(') {tok.type = TOKEN_LPAREN;}
+    else if (current_char() == ')') {tok.type = TOKEN_RPAREN;}
+    else if (current_char() == '[') {tok.type = TOKEN_LBRACKET;}
+    else if (current_char() == ']') {tok.type = TOKEN_RBRACKET;}
+    else if (current_char() == '{') {tok.type = TOKEN_LBRACE;}
+    else if (current_char() == '}') {tok.type = TOKEN_RBRACE;}
+    else if (current_char() == ',') {tok.type = TOKEN_COMMA;}
+    else if (current_char() == ':') {tok.type = TOKEN_COLON;}
+    else if (current_char() == ';') {tok.type = TOKEN_SEMICOLON;}
+    else if (current_char() == '?') {tok.type = TOKEN_QUESTION;}
+    else if (current_char() == '#') {tok.type = TOKEN_HASH;}
+    else {tok.type = TOKEN_UNKNOWN;}
+    const char *symbol = &src[pos];
     advance();
+    tok.lexeme = symbol;
+    tok.length = 1;
     print_token(tok, debug);
     return tok;
 }

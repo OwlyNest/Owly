@@ -1,0 +1,33 @@
+{
+	"PROGRAM":	[{
+			"FUNC_DECL":	[{
+					"properties":	["STATIC"]
+				}, {
+					"type":	"int"
+				}, {
+					"name":	"x"
+				}, {
+					"args":	[{
+							"type":	"int",
+							"name":	"a"
+						}, {
+							"type":	"char*",
+							"name":	"x"
+						}]
+				}, {
+					"body":	[{
+							"VAR_DECL":	[{
+									"properties":	["REGISTER"]
+								}, {
+									"type":	"int"
+								}, {
+									"name":	"x"
+								}, {
+									"value":	"3"
+								}]
+						}, {
+							"FUNC_DECL":	"x"
+						}]
+				}]
+		}]
+}

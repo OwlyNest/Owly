@@ -1,0 +1,10 @@
+{
+    "PROGRAM": [{
+        "VAR_DECL": [
+          {"properties" : ["STATIC", "AUTO", "REGISTER", "LONG"]},
+          {"type": "int*"},
+          {"name": "x"},
+          {"value": "&y"}
+      ]}
+    ]
+}

@@ -1,140 +1,91 @@
+/*
+	* ast.h - [Enter description]
+	* Author:   Amity
+	* Date:     Thu Oct 30 00:43:29 2025
+	* Copyright © 2025 OwlyNest
+*/
 
+/* --- Styling Instructions ---
+	* Encoding:                      UTF-8, Unix line endings
+	* Text font:                     Monospace
+	* Line width:                    Max 80 characters
+	* Indentation:                   Use 4 spaces
+	* Brace style:                   Same line as control statement
+	* Inline comments:               Column 40, wherever possible, else, whole multiple of 20
+	* Section headers:               Use 3 '-' characters before and after
+	* Pointer notation:              Next to variable name, not type
+	* Binary operations:             Space around operator
+	* Empty parameter list:          Use (void) instead of ()
+	* Statements and declarations:   Max one per line
+*/
+
+/* --- Macros ---*/
 #ifndef AST_H
 #define AST_H
-
-#include <stddef.h>
-
+/* --- Includes ---*/
+#include <stdlib.h>
+/* --- Typedefs - Structs - Enums ---*/
 typedef enum {
-    AST_PROGRAM,
-    AST_FUNCTION,
-    AST_IDENTIFIER,
-    AST_PRINT,
-    AST_LITERAL_STRING,
-    AST_LITERAL_NUMBER,
-    AST_VAR_DECL,
-    AST_IF,
-    AST_WHILE,
-    AST_FOR,
-
-    AST_BINARY_EXPR,
-    AST_UNARY_EXPR,
-} ASTNodeType;
-
+	EXPR_LITERAL,
+	EXPR_IDENTIFIER,
+	EXPR_BINARY_OP,
+	EXPR_UNARY_OP,
+} ExprKind;
 typedef enum {
-    VAR_TYPE_STR,
-    VAR_TYPE_INT,
-    VAR_TYPE_DOUBLE,
-    VAR_TYPE_LIST,
-    VAR_TYPE_ARRAY,
-    VAR_TYPE_IDENT,
-} VarDeclType;
+	NODE_VAR_DECL,
+	NODE_FUNC_DECL,
+	NODE_RETURN,
+} NodeType;
 
-typedef struct ASTNode {
-    ASTNodeType type;
+typedef struct {
+    enum { STORAGE_NONE, AUTO, REGISTER, STATIC, EXTERN } storage;
+    enum { SIGN_NONE, SIGNED_T, UNSIGNED_T } sign;
+    enum { LENGTH_NONE, SHORT_T, LONG_T, LONGLONG_T } length;
+    int is_const;
+    int is_volatile;
+    const char *base_type; // "int", "char", "float", etc.
+} TypeSpec;
 
-    union {
-        struct {
-            struct ASTNode **statements;
-            size_t count;
-        } program;
+/*
+	* Note to future self:
+	* Currently, 'properties' are stored as an array of strings.
+	* In a future semantic pass, this should be replaced with the above TypeSpec struct
+	* that keeps track of storage, sign, qualifiers, length, and base_type properly.
+*/
 
-        struct {
-            const char *name;
-            struct ASTNode **body;
-            size_t count;
-        } function;
+typedef struct Node {
+	NodeType type;
 
-        struct {
-            struct ASTNode *value;
-        } print;
+	union {
+		struct {
+			const char *properties[11]; // there are 11 properties
+			const char *type;
+			int is_pointer;
+			const char *name;
+			const char *value;
+		} var_decl;
 
-        struct {
-            const char *value;
-        } literal_string;
+		struct {
+			const char *properties[11]; // there are 11 properties
+			const char *type;
+			int is_pointer;
+			const char *name;
+			struct Node **args;
+			size_t arg_count;
+			int is_prototype;
+			struct Node **body;
+			size_t body_count;
+		} func_decl;
+		
+		struct {
+			const char *value;
+		} return_stmt;
 
-        struct {
-            const char *value;
-        } literal_number;
+	};
+} Node;
 
-        struct {
-            const char *name;
-            size_t name_len;
-            VarDeclType var_type;
-            struct ASTNode *value;
-        } var_decl; 
+/* --- Globals ---*/
 
-        struct {
-            /* Condition expression for the if statement */
-            struct ASTNode *condition;
-
-            /* Statements inside the if block */
-            struct ASTNode **body;
-            size_t count;
-
-            /* Elif blocks: conditions and bodies */
-            struct ASTNode **elif_conditions;
-            struct ASTNode ***elif_bodies;
-            size_t *elif_body_counts;
-            size_t elif_count;
-
-            /* Else block: statements */
-            struct ASTNode **else_body;
-            size_t else_count;
-        } if_stmt;
-
-        struct {
-            struct ASTNode *condition;
-            struct ASTNode **body;
-            size_t count;
-        } while_stmt;
-
-        struct {
-            const char *name;
-            size_t name_len;
-        } identifier;
-
-        struct {
-            struct ASTNode *init;
-            struct ASTNode *condition;
-            struct ASTNode *post;
-            struct ASTNode **body;
-            size_t count;
-        } for_stmt;
-
-        struct {
-            char *op;
-            struct ASTNode *left;
-            struct ASTNode *right;
-        } binary_expr;
-        
-        struct {
-            char *op;
-            struct ASTNode *operand;
-        } unary_expr;
-        
-    };
-} ASTNode;
-
-
-//constructors
-ASTNode *ast_new_program();
-ASTNode *ast_new_function(const char *name);
-ASTNode *ast_new_print(ASTNode *value);
-ASTNode *ast_new_literal_string(const char *value);
-ASTNode *ast_new_literal_number(const char *value);
-ASTNode *ast_new_var_decl(const char *name, size_t name_len, VarDeclType type, ASTNode *value);
-ASTNode *ast_new_if(ASTNode *condition);
-ASTNode *ast_new_while(ASTNode *condition);
-ASTNode *ast_new_for(ASTNode *init, ASTNode *condition, ASTNode *post);
-ASTNode *ast_new_identifier(const char *name, size_t name_len);
-
-ASTNode *ast_new_bin_exp(const char *op, ASTNode *left, ASTNode *right);
-ASTNode *ast_new_un_exp(const char *op, ASTNode *operand);
-
-
-//helpers
-void ast_add_statement(ASTNode *parent, ASTNode *child);
-void ast_print(const ASTNode *node);
-void ast_free(ASTNode *node);
-
+/* --- Prototypes ---*/
+Node *create_node(NodeType type);
 #endif

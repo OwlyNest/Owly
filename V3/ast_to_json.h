@@ -1,7 +1,7 @@
 /*
-	* ast.c - [Enter description]
+	* ast_to_json.h - [Enter description]
 	* Author:   Amity
-	* Date:     Thu Oct 30 01:24:29 2025
+	* Date:     Thu Oct 30 14:59:18 2025
 	* Copyright © 2025 OwlyNest
 */
 
@@ -18,23 +18,20 @@
 	* Empty parameter list:          Use (void) instead of ()
 	* Statements and declarations:   Max one per line
 */
-
+#ifndef ASTTOJSON_H
+#define ASTTOJSON_H
 /* --- Macros ---*/
 
 /* --- Includes ---*/
 #include "ast.h"
-#include "memutils.h"
+#include "parser.h"
+
+#include <cjson/cJSON.h>
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/
 
 /* --- Prototypes ---*/
-Node *create_node(NodeType type);
-/* --- Main ---*/
-
-/* --- Functions ---*/
-Node *create_node(NodeType type) {
-	Node *node = xcalloc(1, sizeof(Node));
-	node->type = type;
-	return node;
-}
+cJSON *var_decl_to_json(Node *decl);
+cJSON *func_decl_to_json(Node *node);
+#endif
