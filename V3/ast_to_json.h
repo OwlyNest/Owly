@@ -25,6 +25,7 @@
 /* --- Includes ---*/
 #include "ast.h"
 #include "parser.h"
+#include "expressions.h"
 
 #include <cjson/cJSON.h>
 /* --- Typedefs - Structs - Enums ---*/
@@ -32,6 +33,18 @@
 /* --- Globals ---*/
 
 /* --- Prototypes ---*/
-cJSON *var_decl_to_json(Node *decl);
+void create_json(Node *node);
+cJSON *node_to_json(Node *node);
+cJSON *program_to_json(Node *node);
+cJSON *var_decl_to_json(Node *node);
 cJSON *func_decl_to_json(Node *node);
+cJSON *return_stmt_to_json(Node *node);
+cJSON *expr_to_json(Expr *expr);
+cJSON *enum_to_json(Node *node);
+cJSON *struct_to_json(Node *node);
+cJSON *while_to_json(Node *node);
+cJSON *do_while_to_json(Node *node);
+cJSON *for_to_json(Node *node);
+cJSON *type_node_to_json(Node *node);
+cJSON *if_stmt_to_json(Node *node);
 #endif

@@ -29,3 +29,13 @@ void *xrealloc(void *ptr, size_t size) {
     }
     return new_ptr;
 }
+
+void xfree(void *ptr) {
+    if (ptr) {
+        free(ptr);
+        ptr = NULL;
+    } else {
+        perror("free");
+        exit(1);
+    }
+}

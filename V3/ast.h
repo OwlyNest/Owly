@@ -1,5 +1,5 @@
 /*
-	* ast.h - [Enter description]
+	* ast.h - header for ast objects
 	* Author:   Amity
 	* Date:     Thu Oct 30 00:43:29 2025
 	* Copyright © 2025 OwlyNest
@@ -23,27 +23,44 @@
 #ifndef AST_H
 #define AST_H
 /* --- Includes ---*/
+#include "expressions.h"
+
 #include <stdlib.h>
+#include <stdio.h>
 /* --- Typedefs - Structs - Enums ---*/
 typedef enum {
-	EXPR_LITERAL,
-	EXPR_IDENTIFIER,
-	EXPR_BINARY_OP,
-	EXPR_UNARY_OP,
-} ExprKind;
-typedef enum {
+	NODE_PROGRAM,
 	NODE_VAR_DECL,
 	NODE_FUNC_DECL,
 	NODE_RETURN,
+	NODE_EXPR,
+	NODE_ENUM_DECL,
+	NODE_STRUCT_DECL,
+	NODE_WHILE_STMT,
+	NODE_DO_WHILE_STMT,
+	NODE_FOR_STMT,
+	NODE_TYPE,
+	NODE_IF_STMT,
 } NodeType;
 
 typedef struct {
+	char *name;
+	Expr *value;
+} EnumMember;
+
+typedef struct {
+    /*
+		* properties:
+		* auto register const inline long restrict short signed static unsigned volatile extern
+	*/
     enum { STORAGE_NONE, AUTO, REGISTER, STATIC, EXTERN } storage;
     enum { SIGN_NONE, SIGNED_T, UNSIGNED_T } sign;
     enum { LENGTH_NONE, SHORT_T, LONG_T, LONGLONG_T } length;
     int is_const;
     int is_volatile;
-    const char *base_type; // "int", "char", "float", etc.
+    int is_inline;
+	int is_restrict;
+	int pointer_depth;
 } TypeSpec;
 
 /*
@@ -51,6 +68,7 @@ typedef struct {
 	* Currently, 'properties' are stored as an array of strings.
 	* In a future semantic pass, this should be replaced with the above TypeSpec struct
 	* that keeps track of storage, sign, qualifiers, length, and base_type properly.
+	* Update: Fuck that!
 */
 
 typedef struct Node {
@@ -58,17 +76,17 @@ typedef struct Node {
 
 	union {
 		struct {
-			const char *properties[11]; // there are 11 properties
-			const char *type;
-			int is_pointer;
+			struct Node **stmts;
+		} program;
+
+		struct {
+			struct Node *type;
 			const char *name;
-			const char *value;
+			Expr *value;
 		} var_decl;
 
 		struct {
-			const char *properties[11]; // there are 11 properties
-			const char *type;
-			int is_pointer;
+			struct Node *type;
 			const char *name;
 			struct Node **args;
 			size_t arg_count;
@@ -78,8 +96,62 @@ typedef struct Node {
 		} func_decl;
 		
 		struct {
-			const char *value;
+			Expr *value;
 		} return_stmt;
+
+		struct {
+			struct Expr *expr;
+		} expr;
+
+		struct {
+			const char *name;
+			EnumMember *members;
+			size_t member_count;
+		} enum_decl;
+
+		struct {
+			const char *name;
+			struct Node **members;
+			size_t member_count;
+		} struct_decl;
+
+		struct {
+			struct Expr *cond;
+			struct Node **body;
+		} while_stmt;
+
+		struct {
+			struct Node **body;
+			struct Expr *cond;
+		} do_while_stmt;
+
+		struct {
+			struct Node *init;
+			struct Node *cond;
+			struct Expr *inc;
+			struct Node **body;
+		} for_stmt;
+
+		struct {
+			TypeSpec *spec;
+			union {
+				const char *base;
+				struct Node *decl;
+			};
+			int is_decl;
+		} type_node;
+
+		/* NOT IMPLEMENTED */
+
+		// I am scared of if statements
+		struct {
+			struct Expr *if_cond;
+			struct Node **if_body;
+			struct Expr **elif_conds;
+			struct Node ***elif_bodies; // This sure won't cause segfaults, right? Update: Fuck
+			size_t elif_count;
+			struct Node **else_body;
+		} if_stmt;
 
 	};
 } Node;
@@ -88,4 +160,5 @@ typedef struct Node {
 
 /* --- Prototypes ---*/
 Node *create_node(NodeType type);
+void free_ast(Node *node);
 #endif

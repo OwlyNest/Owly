@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include <ctype.h>
 
+/*
+    * Future Amity: "oh no, oh no no no" *every 2 seconds*
+*/
+
 #define MAX_LINE 256
 #define MAX_ELEMENTS 16
 #define MAX_ELEMENT_LEN 64
@@ -239,6 +243,7 @@ int main(int argc, char *argv[]) {
             }
             else {
                 // For any other line inside main, just print as is
+                // Future Amity: What the FUCK!!!
                 fprintf(fout, "    %s", trim);
             }
         } else if (strchr(trim, '(') && strchr(trim, ')') && strchr(trim, ';')) {

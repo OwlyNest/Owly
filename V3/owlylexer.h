@@ -4,49 +4,48 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef enum {
+typedef enum TokenType {
     TOKEN_EOF,
     TOKEN_UNKNOWN,
 
-    TOKEN_KEYWORD_AUTO,
-    TOKEN_KEYWORD_BREAK,
-    TOKEN_KEYWORD_CASE,
-    TOKEN_KEYWORD_CHAR,
-    TOKEN_KEYWORD_CONST,
-    TOKEN_KEYWORD_CONTINUE,
-    TOKEN_KEYWORD_DEFAULT,
-    TOKEN_KEYWORD_DO,
-    TOKEN_KEYWORD_DOUBLE,
-    TOKEN_KEYWORD_ELSE,
-    TOKEN_KEYWORD_ENUM,
-    TOKEN_KEYWORD_EXTERN,
-    TOKEN_KEYWORD_FLOAT,
-    TOKEN_KEYWORD_FOR,
-    TOKEN_KEYWORD_FUNC,
-    TOKEN_KEYWORD_GOTO,
-    TOKEN_KEYWORD_IF,
-    TOKEN_KEYWORD_INLINE,
-    TOKEN_KEYWORD_INT,
-    TOKEN_KEYWORD_LONG,
-    TOKEN_KEYWORD_REGISTER,
-    TOKEN_KEYWORD_RESTRICT,
-    TOKEN_KEYWORD_RETURN,
-    TOKEN_KEYWORD_SHORT,
-    TOKEN_KEYWORD_SIGNED,
-    TOKEN_KEYWORD_SIZEOF,
-    TOKEN_KEYWORD_STATIC,
-    TOKEN_KEYWORD_STRUCT,
-    TOKEN_KEYWORD_SWITCH,
-    TOKEN_KEYWORD_TYPEDEF,
-    TOKEN_KEYWORD_UNION,
-    TOKEN_KEYWORD_UNSIGNED,
-    TOKEN_KEYWORD_VAR,
-    TOKEN_KEYWORD_VOID,
-    TOKEN_KEYWORD_VOLATILE,
-    TOKEN_KEYWORD_WHILE,
-    TOKEN_KEYWORD_BOOL,
-    TOKEN_KEYWORD_COMPLEX,
-    TOKEN_KEYWORD_IMAGINARY,
+    TOKEN_KEYWORD_AUTO,                // done
+    TOKEN_KEYWORD_BREAK,               // not done
+    TOKEN_KEYWORD_CASE,                // not done
+    TOKEN_KEYWORD_CHAR,                // done
+    TOKEN_KEYWORD_CONST,               // done
+    TOKEN_KEYWORD_CONTINUE,            // not done
+    TOKEN_KEYWORD_DEFAULT,             // not done
+    TOKEN_KEYWORD_DO,                  // done
+    TOKEN_KEYWORD_DOUBLE,              // done
+    TOKEN_KEYWORD_ELSE,                // done
+    TOKEN_KEYWORD_ENUM,                // done
+    TOKEN_KEYWORD_EXTERN,              // done
+    TOKEN_KEYWORD_FLOAT,               // done
+    TOKEN_KEYWORD_FOR,                 // done
+    TOKEN_KEYWORD_FUNC,                // done
+    TOKEN_KEYWORD_IF,                  // done
+    TOKEN_KEYWORD_INLINE,              // done
+    TOKEN_KEYWORD_INT,                 // done
+    TOKEN_KEYWORD_LONG,                // done
+    TOKEN_KEYWORD_REGISTER,            // done
+    TOKEN_KEYWORD_RESTRICT,            // done
+    TOKEN_KEYWORD_RETURN,              // done
+    TOKEN_KEYWORD_SHORT,               // done
+    TOKEN_KEYWORD_SIGNED,              // done
+    TOKEN_KEYWORD_SIZEOF,              // not done
+    TOKEN_KEYWORD_STATIC,              // done
+    TOKEN_KEYWORD_STRUCT,              // done
+    TOKEN_KEYWORD_SWITCH,              // not done
+    TOKEN_KEYWORD_TYPEDEF,             // not done
+    TOKEN_KEYWORD_UNION,               // not done
+    TOKEN_KEYWORD_UNSIGNED,            // done
+    TOKEN_KEYWORD_VAR,                 // done
+    TOKEN_KEYWORD_VOID,                // done
+    TOKEN_KEYWORD_VOLATILE,            // done
+    TOKEN_KEYWORD_WHILE,               // done
+    TOKEN_KEYWORD_BOOL,                // done
+    TOKEN_KEYWORD_COMPLEX,             // done
+    TOKEN_KEYWORD_IMAGINARY,           // done
 
     TOKEN_OPERATOR_PLUS,               // +
     TOKEN_OPERATOR_MINUS,              // -
@@ -107,13 +106,13 @@ typedef enum {
 } TokenType;
 
 // Token structure
-typedef struct {
+typedef struct Token {
     TokenType type;
     const char *lexeme;
     size_t length;
 } Token;
 
-typedef struct {
+typedef struct TokenList {
     Token *tokens;
     size_t count;
     size_t capacity;

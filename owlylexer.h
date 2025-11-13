@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-// Token types enumeration
 typedef enum {
     TOKEN_EOF,
     TOKEN_IDENTIFIER,
@@ -39,8 +38,8 @@ typedef enum {
 // Token structure
 typedef struct {
     TokenType type;
-    const char *lexeme;  // Pointer into source text (not malloc'd)
-    size_t length;       // Length of the lexeme substring
+    const char *lexeme;
+    size_t length;
 } Token;
 
 // Lexer functions
@@ -48,4 +47,4 @@ void lexer_init(const char *source_code);
 void lexer_cleanup(void);
 Token lexer_next_token(int debug);
 
-#endif // OWLYLEXER_H
+#endif

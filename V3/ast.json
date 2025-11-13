@@ -1,32 +1,117 @@
 {
 	"PROGRAM":	[{
-			"FUNC_DECL":	[{
-					"properties":	["STATIC"]
-				}, {
-					"type":	"int"
-				}, {
-					"name":	"x"
-				}, {
-					"args":	[{
-							"type":	"int",
-							"name":	"a"
-						}, {
-							"type":	"char*",
-							"name":	"x"
-						}]
+			"IF":	[{
+					"condition":	{
+						"EXPRESSION":	[{
+								"type":	"IDENTIFIER"
+							}, {
+								"name":	"x"
+							}]
+					}
 				}, {
 					"body":	[{
 							"VAR_DECL":	[{
-									"properties":	["REGISTER"]
-								}, {
-									"type":	"int"
+									"type":	{
+										"TYPE":	[{
+												"storage":	"none",
+												"sign":	"none",
+												"length":	"none",
+												"const":	false,
+												"volatile":	false,
+												"inline":	false,
+												"restrict":	false,
+												"pointer_depth":	0
+											}, {
+												"base":	"int"
+											}]
+									}
 								}, {
 									"name":	"x"
 								}, {
-									"value":	"3"
+									"value":	{
+										"EXPRESSION":	[{
+												"type":	"IDENTIFIER"
+											}, {
+												"name":	"i"
+											}]
+									}
 								}]
-						}, {
-							"FUNC_DECL":	"x"
+						}]
+				}, {
+					"else if":	[{
+							"condition":	{
+								"EXPRESSION":	[{
+										"type":	"IDENTIFIER"
+									}, {
+										"name":	"y"
+									}]
+							},
+							"body":	[{
+									"VAR_DECL":	[{
+											"type":	{
+												"TYPE":	[{
+														"storage":	"none",
+														"sign":	"none",
+														"length":	"none",
+														"const":	false,
+														"volatile":	false,
+														"inline":	false,
+														"restrict":	false,
+														"pointer_depth":	0
+													}, {
+														"base":	"int"
+													}]
+											}
+										}, {
+											"name":	"y"
+										}, {
+											"value":	{
+												"EXPRESSION":	[{
+														"type":	"IDENTIFIER"
+													}, {
+														"name":	"i"
+													}]
+											}
+										}]
+								}]
+						}]
+				}, {
+					"else if":	[{
+							"condition":	{
+								"EXPRESSION":	[{
+										"type":	"IDENTIFIER"
+									}, {
+										"name":	"z"
+									}]
+							},
+							"body":	[{
+									"VAR_DECL":	[{
+											"type":	{
+												"TYPE":	[{
+														"storage":	"none",
+														"sign":	"none",
+														"length":	"none",
+														"const":	false,
+														"volatile":	false,
+														"inline":	false,
+														"restrict":	false,
+														"pointer_depth":	0
+													}, {
+														"base":	"int"
+													}]
+											}
+										}, {
+											"name":	"z"
+										}, {
+											"value":	{
+												"EXPRESSION":	[{
+														"type":	"IDENTIFIER"
+													}, {
+														"name":	"i"
+													}]
+											}
+										}]
+								}]
 						}]
 				}]
 		}]

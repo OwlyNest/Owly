@@ -28,6 +28,7 @@
 #include "owlylexer.h"
 #include "ast.h"
 #include "ast_to_json.h"
+#include "expressions.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,51 +42,65 @@ size_t pos = 0;
 extern int debug;
 /* --- Protypes --- */
 void parser_error(const char *msg, Token *t);
-static Token *peek(void);
-static Token *peek_next(void);
-static Token *consume(void);
-static int match(TokenType type, const char *lexeme);
-static int is_at_end(void);
+ Token *peek(void);
+Token *peek_next(void);
+Token *consume(void);
+int match(TokenType type, const char *lexeme);
+Token *expect(TokenType expected, const char *err_msg);
+void free_parser(Node *ast);
+int is_at_end(void);
 int is_property(TokenType type);
 int is_type(TokenType type);
 int is_literal(TokenType type);
+int is_operator(TokenType type);
+int is_unary_operator(Token *tok);
+int is_binary_operator(Token *tok);
 void validate_specifiers(const char **props);
 TokenType type_from_string(const char *str);
 void parser_init(void);
-void parse_program(void);
+Node *parse_program(void);
 Node *parse_var_decl(void);
 Node *parse_func_decl(void);
 Node *parse_arg_decl(void);
 Node *parse_ret(void);
 Node **parse_block(size_t *out_count);
+Node *parse_expression(void);
+Node *parse_enum_decl(void);
+Node *parse_struct_decl(void);
+Node *parse_while_stmt(void);
+Node *parse_do_while_stmt(void);
+Node *parse_for_stmt(void);
+TypeSpec *parse_type_spec(void);
+Node *parse_type(void);
+Node *parse_if_stmt(void);
 
 /* --- Functions --- */
 void parser_error(const char *msg, Token *t) {
     if (t) {
-        fprintf(stderr, "Parser error: %s at token '%.*s'\n", msg, (int)t->length, t->lexeme);
+        fprintf(stderr, "[F] Parser error: %s at token '%.*s'\n", msg, (int)t->length, t->lexeme);
         exit(1);
     } else {
-        fprintf(stderr, "Parser error: %s\n", msg);
+        fprintf(stderr, "[F] Parser error: %s\n", msg);
         exit(1);
     }
 }
 
-static Token *peek(void) {
+Token *peek(void) {
     if (pos < token_count) return &token_list[pos];
     return NULL;
 }
 
-static Token *peek_next(void) {
+Token *peek_next(void) {
     if (pos + 1 < token_count) return &token_list[pos + 1];
     return NULL;
 }
 
-static Token *consume(void) {
+Token *consume(void) {
     if (pos < token_count) return &token_list[pos++];
     return NULL;
 }
 
-static int match(TokenType type, const char *lexeme) {
+int match(TokenType type, const char *lexeme) {
     Token *t = peek();
     if (t && t->type == type && (!lexeme || 
         (strlen(lexeme) == t->length && strncmp(t->lexeme, lexeme, t->length) == 0))) {
@@ -95,7 +110,24 @@ static int match(TokenType type, const char *lexeme) {
     return 0;
 }
 
-static int is_at_end(void) {
+Token *expect(TokenType expected, const char *err_msg) {
+    Token *tok = peek();
+    if (!tok || tok->type != expected) {
+        parser_error(err_msg, tok);
+    }
+    return tok;
+}
+
+void free_parser(Node *ast) {
+    free_ast(ast);
+    for (size_t i = 0; i < token_count; i++) {
+        xfree((void *)token_list[i].lexeme);
+    }
+    printf("[X] Freed AST and token list successfully\n");
+}
+
+
+int is_at_end(void) {
     return pos >= token_count || token_list[pos].type == TOKEN_EOF;
 }
 
@@ -104,6 +136,7 @@ int is_property(TokenType type) {
         case TOKEN_KEYWORD_AUTO:
         case TOKEN_KEYWORD_REGISTER:
         case TOKEN_KEYWORD_CONST:
+        case TOKEN_KEYWORD_ENUM:
         case TOKEN_KEYWORD_EXTERN:
         case TOKEN_KEYWORD_INLINE:
         case TOKEN_KEYWORD_LONG:
@@ -111,6 +144,7 @@ int is_property(TokenType type) {
         case TOKEN_KEYWORD_SHORT:
         case TOKEN_KEYWORD_SIGNED:
         case TOKEN_KEYWORD_STATIC:
+        case TOKEN_KEYWORD_STRUCT:
         case TOKEN_KEYWORD_UNSIGNED:
         case TOKEN_KEYWORD_VOLATILE:
             return 1;
@@ -129,6 +163,7 @@ int is_type(TokenType type) {
         case TOKEN_KEYWORD_BOOL:
         case TOKEN_KEYWORD_COMPLEX:
         case TOKEN_KEYWORD_IMAGINARY:
+        case TOKEN_IDENTIFIER:
             return 1;
         default:
             return 0;
@@ -141,6 +176,106 @@ int is_literal(TokenType type) {
         case TOKEN_LITERAL_FLOAT:
         case TOKEN_LITERAL_INT:
         case TOKEN_LITERAL_STRING:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int is_operator(TokenType type) {
+    switch (type) {
+        case TOKEN_OPERATOR_PLUS:               // +
+        case TOKEN_OPERATOR_MINUS:              // -
+        case TOKEN_OPERATOR_STAR:               // *
+        case TOKEN_OPERATOR_SLASH:              // /
+        case TOKEN_OPERATOR_PERCENT:            // %
+        case TOKEN_OPERATOR_INCREMENT:          // ++
+        case TOKEN_OPERATOR_DECREMENT:          // --
+        case TOKEN_OPERATOR_ASSIGN:             // =
+        case TOKEN_OPERATOR_PLUSASSIGN:         // +=
+        case TOKEN_OPERATOR_MINUSASSIGN:        // -=
+        case TOKEN_OPERATOR_STARASSIGN:         // *=
+        case TOKEN_OPERATOR_SLASHASSIGN:        // /=
+        case TOKEN_OPERATOR_PERCENTASSIGN:      // %=
+        case TOKEN_OPERATOR_EQUAL:              // ==
+        case TOKEN_OPERATOR_NEQUAL:             // !=
+        case TOKEN_OPERATOR_GREATER:            // >
+        case TOKEN_OPERATOR_LOWER:              // <
+        case TOKEN_OPERATOR_GEQ:                // >=
+        case TOKEN_OPERATOR_LEQ:                // <=
+        case TOKEN_OPERATOR_NOT:                // !
+        case TOKEN_OPERATOR_AND:                // &&
+        case TOKEN_OPERATOR_OR:                 // ||
+        case TOKEN_OPERATOR_AMP:                // &
+        case TOKEN_OPERATOR_BITOR:              // |
+        case TOKEN_OPERATOR_BITXOR:             // ^
+        case TOKEN_OPERATOR_BITNOT:             // ~
+        case TOKEN_OPERATOR_BITSHL:             // <<
+        case TOKEN_OPERATOR_BITSHR:             // >>
+        case TOKEN_OPERATOR_BITANDASSIGN:       // &=
+        case TOKEN_OPERATOR_BITORASSIGN:        // |=
+        case TOKEN_OPERATOR_BITXORASSIGN:       // ^=
+        case TOKEN_OPERATOR_BITSHLASSIGN:       // <<=
+        case TOKEN_OPERATOR_BITSHRASSIGN:       // >>=
+        case TOKEN_OPERATOR_POINT:              // .
+        case TOKEN_OPERATOR_ARROW:              // ->
+        case TOKEN_OPERATOR_ELLIPSIS:           // ...
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int is_unary_operator(Token *tok) {
+    if (!tok) return 0;
+    switch (tok->type) {
+        case TOKEN_OPERATOR_INCREMENT:
+        case TOKEN_OPERATOR_DECREMENT:
+        case TOKEN_OPERATOR_MINUS:
+        case TOKEN_OPERATOR_PLUS:
+        case TOKEN_OPERATOR_NOT:
+        case TOKEN_OPERATOR_BITNOT:
+        case TOKEN_OPERATOR_STAR:
+        case TOKEN_OPERATOR_AMP:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+int is_binary_operator(Token *tok) {
+    switch (tok->type) {
+        case TOKEN_OPERATOR_PLUS:
+        case TOKEN_OPERATOR_MINUS:
+        case TOKEN_OPERATOR_STAR:
+        case TOKEN_OPERATOR_SLASH:
+        case TOKEN_OPERATOR_PERCENT:
+        case TOKEN_OPERATOR_AND:
+        case TOKEN_OPERATOR_OR:
+        case TOKEN_OPERATOR_AMP:
+        case TOKEN_OPERATOR_BITOR:
+        case TOKEN_OPERATOR_BITXOR:
+        case TOKEN_OPERATOR_BITSHL:
+        case TOKEN_OPERATOR_BITSHR:
+        case TOKEN_OPERATOR_EQUAL:
+        case TOKEN_OPERATOR_NEQUAL:
+        case TOKEN_OPERATOR_LEQ:
+        case TOKEN_OPERATOR_GEQ:
+        case TOKEN_OPERATOR_LOWER:
+        case TOKEN_OPERATOR_GREATER:
+        case TOKEN_OPERATOR_ASSIGN:
+        case TOKEN_OPERATOR_PLUSASSIGN:
+        case TOKEN_OPERATOR_MINUSASSIGN:
+        case TOKEN_OPERATOR_STARASSIGN:
+        case TOKEN_OPERATOR_SLASHASSIGN:
+        case TOKEN_OPERATOR_PERCENTASSIGN:
+        case TOKEN_OPERATOR_BITANDASSIGN:
+        case TOKEN_OPERATOR_BITORASSIGN:
+        case TOKEN_OPERATOR_BITXORASSIGN:
+        case TOKEN_OPERATOR_BITSHLASSIGN:
+        case TOKEN_OPERATOR_BITSHRASSIGN:
+        case TOKEN_OPERATOR_ARROW:
+        case TOKEN_OPERATOR_POINT:
             return 1;
         default:
             return 0;
@@ -194,7 +329,7 @@ TokenType type_from_string(const char *str) {
     else if (strncmp(str, "CONST", sizeof("CONST")) == 0) return TOKEN_KEYWORD_CONST;
     else if (strncmp(str, "CONTINUE", sizeof("CONTINUE")) == 0) return TOKEN_KEYWORD_CONTINUE;
     else if (strncmp(str, "DEFAULT", sizeof("DEFAULT")) == 0) return TOKEN_KEYWORD_DEFAULT;
-    else if (strncmp(str, "DO", sizeof("DO") == 0)) return TOKEN_KEYWORD_DO;
+    else if (strncmp(str, "DO", sizeof("DO")) == 0) return TOKEN_KEYWORD_DO;
     else if (strncmp(str, "DOUBLE", sizeof("DOUBLE")) == 0) return TOKEN_KEYWORD_DOUBLE;
     else if (strncmp(str, "ELSE", sizeof("ELSE")) == 0) return TOKEN_KEYWORD_ELSE;
     else if (strncmp(str, "ENUM", sizeof("ENUM")) == 0) return TOKEN_KEYWORD_ENUM;
@@ -202,7 +337,6 @@ TokenType type_from_string(const char *str) {
     else if (strncmp(str, "FLOAT", sizeof("FLOAT")) == 0) return TOKEN_KEYWORD_FLOAT;
     else if (strncmp(str, "FOR", sizeof("FOR")) == 0) return TOKEN_KEYWORD_FOR;
     else if (strncmp(str, "FUNC", sizeof("FUNC")) == 0) return TOKEN_KEYWORD_FUNC;
-    else if (strncmp(str, "GOTO", sizeof("GOTO")) == 0) return TOKEN_KEYWORD_GOTO;
     else if (strncmp(str, "IF", sizeof("IF")) == 0) return TOKEN_KEYWORD_IF;
     else if (strncmp(str, "INLINE", sizeof("INLINE")) == 0) return TOKEN_KEYWORD_INLINE;
     else if (strncmp(str, "INT", sizeof("INT")) == 0) return TOKEN_KEYWORD_INT;
@@ -222,8 +356,8 @@ TokenType type_from_string(const char *str) {
     else if (strncmp(str, "VAR", sizeof("VAR")) == 0) return TOKEN_KEYWORD_VAR;
     else if (strncmp(str, "VOID", sizeof("VOID")) == 0) return TOKEN_KEYWORD_VOID;
     else if (strncmp(str, "VOLATILE", sizeof("VOLATILE")) == 0) return TOKEN_KEYWORD_VOLATILE;
-    else if (strncmp(str, "WHILE", sizeof("WHILE") == 0)) return TOKEN_KEYWORD_WHILE;
-    else if (strncmp(str, "_BOOL", sizeof("_BOOL") == 0)) return TOKEN_KEYWORD_BOOL;
+    else if (strncmp(str, "WHILE", sizeof("WHILE")) == 0) return TOKEN_KEYWORD_WHILE;
+    else if (strncmp(str, "_BOOL", sizeof("_BOOL")) == 0) return TOKEN_KEYWORD_BOOL;
     else if (strncmp(str, "_COMPLEX", sizeof("_COMPLEX")) == 0) return TOKEN_KEYWORD_COMPLEX;
     else if (strncmp(str, "_IMAGINARY", sizeof("_IMAGINARY")) == 0) return TOKEN_KEYWORD_IMAGINARY;
 
@@ -298,45 +432,18 @@ void parser_init(void) {
     }
     fclose(tokens);
 
-    parse_program();
-    
+    Node *ast = parse_program();
+    create_json(ast);
+    free_parser(ast);
 }
 
-void parse_program(void) {
-    cJSON *root = cJSON_CreateObject();
-    cJSON *program = cJSON_AddArrayToObject(root, "PROGRAM");  
-
+Node *parse_program(void) {
+    Node *program = create_node(NODE_PROGRAM);
     size_t stmt_count = 0;
-    Node **stmts = parse_block(&stmt_count);
-
-    for (size_t i = 0; i < stmt_count; i++) {
-        cJSON *item = NULL;
-        switch (stmts[i]->type) {
-            case NODE_VAR_DECL:
-                item = var_decl_to_json(stmts[i]);
-                break;
-            case NODE_FUNC_DECL:
-                item = func_decl_to_json(stmts[i]);
-                break;
-            default:
-                break;
-        }
-        if (item) {
-            cJSON_AddItemToArray(program, item);
-        }
+    while (peek() && (peek()->type != TOKEN_EOF)) {
+        program->program.stmts = parse_block(&stmt_count);
     }
-    char *json_str = cJSON_Print(root);
-    FILE *json_file = fopen("ast.json", "w");
-    if (json_file) {
-        fputs(json_str, json_file);
-        fclose(json_file);
-    }
-    if (debug) {
-        printf("%s\n", json_str);
-    }
-
-    cJSON_free(json_str);
-    cJSON_Delete(root);
+    return program;
 }
 
 Node *parse_var_decl(void) {
@@ -345,68 +452,23 @@ Node *parse_var_decl(void) {
         * var [properties] type [*]ident [= literal|identifier|&identifier]
     */
     Node *node = create_node(NODE_VAR_DECL);
-    // Properties
-    int properties = 0;
-    while (is_property(peek()->type)) {
-        if (properties >= 11) {
-            parser_error("too many properties, meaning you have at least one twice", peek());
-        }
-        Token *t = peek();
-        node->var_decl.properties[properties++] = strdup(token_type_to_string(t->type));
-        validate_specifiers(node->var_decl.properties);
-        consume();
-    }
-    node->var_decl.properties[properties] = NULL;
-    // Type
-    if (!is_type(peek()->type)) {
-        printf("[WARN]: No type specified for variable '%s', defaulting to int\n", peek()->lexeme);
-        node->var_decl.type = strdup("int");
-    } else {
-        Token *type = consume();
-        node->var_decl.type = strdup(type->lexeme);
-    }
-    node->var_decl.is_pointer = 0;
-    if (peek()->type == TOKEN_OPERATOR_STAR) {
-        node->var_decl.is_pointer = 1;
-        consume();
-    }
+
+    node->var_decl.type = parse_type();
+
     // Name
-    if (peek()->type != TOKEN_IDENTIFIER) {
-        parser_error("Expected variable name after type", peek());
-    }
+    expect(TOKEN_IDENTIFIER, "Expected variable name after type");
     Token *name = consume();
     node->var_decl.name = strdup(name->lexeme);
 
     if (peek()->type != TOKEN_SEMICOLON) {
-        if (peek()->type != TOKEN_OPERATOR_ASSIGN) {
-            parser_error("need assign to initialize data", peek());
-        }
-        consume();
-        Token *val = consume();
-        if (is_literal(val->type)) {
-            node->var_decl.value = strdup(val->lexeme);
-        } else if (val->type == TOKEN_IDENTIFIER) {
-            node->var_decl.value = strdup(val->lexeme);
-        } else if (val->type == TOKEN_OPERATOR_AMP) {
-            Token *target = consume();
-            if (target->type != TOKEN_IDENTIFIER) {
-                parser_error("Expedted identifier after &", target);
-            }
-            size_t len = 1 + strlen(target->lexeme) + 1;
-            char *dest = xmalloc(len);
-            snprintf(dest, len, "&%s", target->lexeme);
-            node->var_decl.value = dest;
+        if (peek() && (peek()->type == TOKEN_OPERATOR_ASSIGN)) {
+            consume();
+            node->var_decl.value = parse_expr();   
         }
     }
-    Token *tok = consume();
-    if (tok->type != TOKEN_SEMICOLON) {
-        parser_error("Expected semicolon", tok);
-    }
-    printf("\n[VAR DECL] %s%s %s = %s\n",
-        node->var_decl.type,
-        node->var_decl.is_pointer ? "*" : "",
-        node->var_decl.name,
-        node->var_decl.value ? node->var_decl.value : "<uninitialized>");
+
+    expect(TOKEN_SEMICOLON, "Expected ';' after variable declaration");
+    consume();
     return node;
 }
 
@@ -417,46 +479,16 @@ Node *parse_func_decl(void) {
     */
 
     Node *node = create_node(NODE_FUNC_DECL);
-    // Properties
-    int properties = 0;
 
-    while (is_property(peek()->type)) {
-        if (properties >= 11) {
-            parser_error("too many properties, meaning you have at least one twice", peek());
-        }
-        Token *t = peek();
-        node->func_decl.properties[properties++] = strdup(token_type_to_string(t->type));
-        validate_specifiers(node->func_decl.properties);
-        consume();
-    }
-    node->func_decl.properties[properties] = NULL;
-
-    // Type
-    if (!is_type(peek()->type)) {
-        printf("[WARN]: No type specified for variable '%s', defaulting to int\n", peek()->lexeme);
-        node->func_decl.type = strdup("int");
-    } else {
-        Token *type = consume();
-        node->func_decl.type = strdup(type->lexeme);
-    }
-
-    node->func_decl.is_pointer = 0;
-    if (peek()->type == TOKEN_OPERATOR_STAR) {
-        node->func_decl.is_pointer = 1;
-        consume();
-    }
+    node->func_decl.type = parse_type();
 
     // Name
-    if (peek()->type != TOKEN_IDENTIFIER) {
-        parser_error("Expected function name after type", peek());
-    }
+    expect(TOKEN_IDENTIFIER, "Expected function name after type");
     Token *name = consume();
     node->func_decl.name = strdup(name->lexeme);
 
-    Token *lparen = consume();
-    if (lparen->type != TOKEN_LPAREN) {
-        parser_error("expected opening parenthesis after function name", lparen);
-    }
+    expect(TOKEN_LPAREN, "Expected opening parenthesis after function name");
+    consume();
 
     node->func_decl.args = NULL;
     node->func_decl.arg_count = 0;
@@ -484,83 +516,26 @@ Node *parse_func_decl(void) {
             parser_error("Expected ',' or ')' in function argument list", peek());
         }
     }
-    Token *rparen = consume();
-    if (rparen->type != TOKEN_RPAREN) {
-        parser_error("Expected closing parenthesis", rparen);
-    }
+
+    expect(TOKEN_RPAREN, "Expected closing parenthesis");
+    consume();
+
     if (peek()->type == TOKEN_SEMICOLON) {
         // Prototype
         node->func_decl.is_prototype = 1;
         node->func_decl.body = NULL;
         node->func_decl.body_count = 0;
-        consume();
-        printf("\n[FUNC DECL] %s%s %s(",
-            node->func_decl.type,
-            node->func_decl.is_pointer ? "*" : "",
-            node->func_decl.name
-        );
-        
-        // Print function arguments
-        for (size_t i = 0; i < node->func_decl.arg_count; i++) {
-            Node *arg = node->func_decl.args[i];
-            printf("%s%s %s",
-                arg->var_decl.type,
-                arg->var_decl.is_pointer ? "*" : "",
-                arg->var_decl.name
-            );
-            if (i + 1 < node->func_decl.arg_count) {
-                printf(", ");
-            }
-        }
-        
-        printf(")");
-        
-        if (node->func_decl.is_prototype) {
-            printf(";\n");  // Prototype ends with semicolon
-        } else {
-            printf(" { ... }\n");  // Body exists
-        }
-        
+        consume();        
         return node;
     }
 
-    Token *lbrace = consume();
-    if (lbrace->type != TOKEN_LBRACE) {
-        parser_error("expected '{' before function body", lbrace);
-    }
+    expect(TOKEN_LBRACE, "Expected '{' before function body");
+    consume();
+
     node->func_decl.body = parse_block(&node->func_decl.body_count);
 
-    Token *rbrace = consume();
-    if (rbrace->type != TOKEN_RBRACE) {
-        parser_error("expected '}' after function body", rbrace);
-    }
-    printf("\n[FUNC DECL] %s%s %s(",
-        node->func_decl.type,
-        node->func_decl.is_pointer ? "*" : "",
-        node->func_decl.name
-    );
-    
-    // Print function arguments
-    for (size_t i = 0; i < node->func_decl.arg_count; i++) {
-        Node *arg = node->func_decl.args[i];
-        printf("%s%s %s",
-            arg->var_decl.type,
-            arg->var_decl.is_pointer ? "*" : "",
-            arg->var_decl.name
-        );
-        if (i + 1 < node->func_decl.arg_count) {
-            printf(", ");
-        }
-    }
-    
-    printf(")");
-    
-    if (node->func_decl.is_prototype) {
-        printf(";\n");  // Prototype ends with semicolon
-    } else {
-        printf(" { ... }\n");  // Body exists
-    }
-    
+    expect(TOKEN_RBRACE, "Expected '}' after function body");
+    consume();
     return node;
 }
 
@@ -570,36 +545,10 @@ Node *parse_arg_decl(void) {
         * [properties] type [*]ident
     */
     Node *node = create_node(NODE_VAR_DECL);
-    // Properties
-    int properties = 0;
-    while (is_property(peek()->type)) {
-        if (properties >= 11) {
-            parser_error("too many properties, meaning you have at least one twice", peek());
-        }
-        Token *t = peek();
-        node->var_decl.properties[properties++] = strdup(token_type_to_string(t->type));
-        validate_specifiers(node->var_decl.properties);
-        consume();
-    }
-    node->var_decl.properties[properties] = NULL;
-    
-    // Type
-    if (!is_type(peek()->type)) {
-        printf("[WARN]: No type specified for variable '%s', defaulting to int\n", peek()->lexeme);
-        node->var_decl.type = strdup("int");
-    } else {
-        Token *type = consume();
-        node->var_decl.type = strdup(type->lexeme);
-    }
-    node->var_decl.is_pointer = 0;
-    if (peek()->type == TOKEN_OPERATOR_STAR) {
-        node->var_decl.is_pointer = 1;
-        consume();
-    }
+
+    node->var_decl.type = parse_type();
     // Name
-    if (peek()->type != TOKEN_IDENTIFIER) {
-        parser_error("Expected variable name after type", peek());
-    }
+    expect(TOKEN_IDENTIFIER, "Expected variable name after type");
     
     Token *name = consume();
     node->var_decl.name = strdup(name->lexeme);
@@ -612,15 +561,13 @@ Node *parse_ret(void) {
     Node *node = create_node(NODE_RETURN);
 
     if (peek()->type != TOKEN_SEMICOLON) {
-        Token *val = consume();
-        node->return_stmt.value = strdup(val->lexeme);
+        node->return_stmt.value = parse_expr();
     } else {
         node->return_stmt.value = NULL;
     }
-    Token *semicolon = consume();
-    if (semicolon->type != TOKEN_SEMICOLON) {
-        parser_error("Expected ';' after return statement", semicolon);
-    }
+    
+    expect(TOKEN_SEMICOLON, "Expected ';' after return statement");
+    consume();
     return node;
 }
 
@@ -633,24 +580,408 @@ Node **parse_block(size_t *out_count) {
         if (!tok || tok->type == TOKEN_EOF || tok->type == TOKEN_RBRACE) {
             break;
         }
+        Node *stmt = NULL;
         if (tok->type == TOKEN_KEYWORD_VAR) {
             consume();
-            Node *var_decl = parse_var_decl();
-            body = xrealloc(body, sizeof(Node *) * (*out_count + 1));
-            body[(*out_count)++] = var_decl;
+            stmt = parse_var_decl();
         } else if (tok->type == TOKEN_KEYWORD_FUNC) {
             consume();
-            Node *func_decl = parse_func_decl();
-            body = xrealloc(body, sizeof(Node *) * (*out_count + 1));
-            body[(*out_count)++] = func_decl;
+            stmt = parse_func_decl();
         } else if (tok->type == TOKEN_KEYWORD_RETURN) {
-            Node *ret_stmt = parse_ret();
-            body = xrealloc(body, sizeof(Node *) * (*out_count + 1));
-            body[(*out_count)++] = ret_stmt;
+            stmt = parse_ret();
+        } else if (tok->type == TOKEN_IDENTIFIER || is_operator(tok->type) || is_literal(tok->type) || tok->type == TOKEN_LPAREN) {
+            stmt = parse_expression();
+        } else if (tok->type == TOKEN_KEYWORD_ENUM){
+            consume();
+            stmt = parse_enum_decl();
+        } else if (tok->type == TOKEN_KEYWORD_STRUCT) {
+            consume();
+            stmt = parse_struct_decl();
+        } else if (tok->type == TOKEN_KEYWORD_WHILE) {
+            consume();
+            stmt = parse_while_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_DO) {
+            consume();
+            stmt = parse_do_while_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_FOR) {
+            consume();
+            stmt = parse_for_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_IF) {
+            consume();
+            stmt = parse_if_stmt();
         } else {
             printf("skipped token %zu (%s)\n", pos, token_type_to_string(tok->type));
             consume();
         }
+
+        body = xrealloc(body, sizeof(Node *) * (*out_count + 2));
+        body[(*out_count)++] = stmt;
+        body[*out_count] = NULL;    
     }
     return body;
+}
+
+Node *parse_expression(void) {
+    Node *expr_node = create_node(NODE_EXPR);
+    expr_node->expr.expr = parse_expr();
+
+    expect(TOKEN_SEMICOLON, "Expected semicolon after expression");
+    consume();
+    return expr_node;
+}
+
+Node *parse_enum_decl(void) {
+    /*
+        * Pattern:
+        * enum name {members};
+    */
+    Node *node = create_node(NODE_ENUM_DECL);
+
+    Token *name = peek();
+    if (name && name->type == TOKEN_IDENTIFIER) {
+        consume();
+        node->enum_decl.name = strdup(name->lexeme);
+    } else {
+        node->enum_decl.name = NULL; // Anon enum
+    }
+    
+    expect(TOKEN_LBRACE, "Expected '{' after enum name");
+    consume();
+
+    node->enum_decl.members = NULL;
+    node->enum_decl.member_count = 0;
+
+    while (1) {
+        Token *t = peek();
+        if (!t) {
+            parser_error("Unexpected end of input in enum declaration", t);
+            break;
+        }
+
+        if (t->type == TOKEN_RBRACE) {
+            consume();
+            break;
+        }
+
+        if (t->type != TOKEN_IDENTIFIER) {
+            parser_error("Expected identifier for enum member", t);
+            break;
+        }
+
+        consume();
+
+        EnumMember member = { strdup(t->lexeme), NULL };
+
+        if (peek() && peek()->type == TOKEN_OPERATOR_ASSIGN) {
+            consume();
+            member.value = parse_expr();
+        }
+
+        node->enum_decl.members = xrealloc(
+            node->enum_decl.members,
+            sizeof(EnumMember) * (node->enum_decl.member_count + 1)
+        );
+        node->enum_decl.members[node->enum_decl.member_count++] = member;
+
+        if (peek() && peek()->type == TOKEN_COMMA) {
+            consume();
+        } else if (peek() && peek()->type == TOKEN_RBRACE) {
+            continue;
+        } else {
+            Token *bad = peek();
+            parser_error("Expected ',' or '}' after enum member", bad);
+        }
+    }
+
+    expect(TOKEN_SEMICOLON, "Expected ';' after enum declaration");
+    consume();
+    return node;
+}
+
+Node *parse_struct_decl(void) {
+    /*
+        * Pattern:
+        * union name {members};
+    */
+    Node *node = create_node(NODE_STRUCT_DECL);
+
+    // name
+    Token *name = peek();
+    if (name && name->type == TOKEN_IDENTIFIER) {
+        consume();
+        node->struct_decl.name = strdup(name->lexeme);
+    } else {
+        node->struct_decl.name = NULL; // Anon struct
+    }
+
+    expect(TOKEN_LBRACE, "Expected '{' after struct name");
+    consume();
+
+    // members
+    Node **members = NULL;
+    size_t members_count = 0;
+
+    while (1) {
+        Token *t = peek();
+
+        if (!t) {
+            parser_error("Unexpected end of input in struct declaration", t);
+            break;
+        }
+
+        if (t->type == TOKEN_RBRACE) {
+            consume();
+            break;
+        }
+        
+        Node *member = parse_arg_decl();
+        if (!member) {
+            parser_error("Expected member", t);
+            break;
+        }
+        members = xrealloc(members, sizeof(Node *) * (members_count + 1));
+        members[members_count++] = member;
+
+        expect(TOKEN_SEMICOLON, "Expected semicolon after struct member");
+        consume();
+    }
+
+    expect(TOKEN_SEMICOLON, "Expected ';' after struct declaration");
+    consume();
+
+    node->struct_decl.members = members;
+    node->struct_decl.member_count = members_count;
+    return node;
+}
+
+Node *parse_while_stmt(void) {
+    /*
+        * Pattern:
+        * while (condition) {body}
+    */
+    Node *node = create_node(NODE_WHILE_STMT);
+
+    expect(TOKEN_LPAREN, "Expected '(' after while");
+    consume();
+    node->while_stmt.cond = parse_expr();
+
+    expect(TOKEN_RPAREN, "Expected ')' after condition");
+    consume();
+
+    expect(TOKEN_LBRACE, "Expected '{' after condition");
+    consume();
+
+    size_t body_count = 0;
+    node->while_stmt.body = parse_block(&body_count);
+
+    expect(TOKEN_RBRACE, "Expected '}' after while body");
+    consume();
+    return node;
+}
+
+Node *parse_do_while_stmt(void) {
+    /*
+        * Pattern:
+        * do {body} while (condition);
+    */
+    Node *node = create_node(NODE_DO_WHILE_STMT);
+    
+    // body
+    expect(TOKEN_LBRACE, "Expected '{' after do");
+    consume();
+
+    size_t body_count = 0;
+    node->do_while_stmt.body = parse_block(&body_count);
+
+    expect(TOKEN_RBRACE, "Expected '}' after do body");
+    consume();
+
+    // while
+    expect(TOKEN_KEYWORD_WHILE, "Expected while after do body");
+    consume();
+
+    // condition
+    expect(TOKEN_LPAREN, "Expected '(' after while");
+    consume();
+    node->do_while_stmt.cond = parse_expr();
+
+    expect(TOKEN_RPAREN, "Expected ')' after condition");
+    consume();
+
+    // semicolon at end
+    expect(TOKEN_SEMICOLON, "Expected ';' after condition");
+    consume();
+    return node;
+}
+
+Node *parse_for_stmt(void) {
+    Node *node = create_node(NODE_FOR_STMT);
+
+    // initialiser
+    expect(TOKEN_LPAREN, "Expected '(' after for");
+    consume();
+
+    Token *tok_init = peek();
+    if (tok_init->type != TOKEN_SEMICOLON) {
+        node->for_stmt.init = parse_var_decl(); // consumes semicolon, var keyword not alowed
+    } else {
+        node->for_stmt.init = NULL;
+        consume();
+    }
+
+    // condition
+    Token *tok_cond = peek();
+    if (tok_cond->type != TOKEN_SEMICOLON) {
+        node->for_stmt.cond = parse_expression(); // consumes semicolon
+    } else {
+        node->for_stmt.cond = NULL;
+        consume();
+
+    }
+
+    // increment
+    Token *tok_inc = peek();
+    if (tok_inc->type != TOKEN_RPAREN) {
+        node->for_stmt.inc = parse_expr(); // no semicolon
+    } else {
+        node->for_stmt.inc = NULL;
+    }
+    expect(TOKEN_RPAREN, "Expected ')' after condition");
+    consume();
+
+    expect(TOKEN_LBRACE, "Expected '{' after condition");
+    consume();
+
+    size_t body_count = 0;
+    node->for_stmt.body = parse_block(&body_count);
+    expect(TOKEN_RBRACE, "Expected '}' after for body");
+    consume();
+    return node;
+}
+
+TypeSpec *parse_type_spec(void) {
+    TypeSpec *spec = xcalloc(1, sizeof(TypeSpec));
+
+    while (is_property(peek()->type)) {
+        Token *t = consume();
+        switch (t->type) {
+            case TOKEN_KEYWORD_AUTO:     spec->storage = AUTO; break;
+            case TOKEN_KEYWORD_REGISTER: spec->storage = REGISTER; break;
+            case TOKEN_KEYWORD_STATIC:   spec->storage = STATIC; break;
+            case TOKEN_KEYWORD_EXTERN:   spec->storage = EXTERN; break;
+            case TOKEN_KEYWORD_SIGNED:   spec->sign = SIGNED_T; break;
+            case TOKEN_KEYWORD_UNSIGNED: spec->sign = UNSIGNED_T; break;
+            case TOKEN_KEYWORD_SHORT:    spec->length = SHORT_T; break;
+            case TOKEN_KEYWORD_LONG:
+                if (spec->length == LONG_T) spec->length = LONGLONG_T;
+                else spec->length = LONG_T;
+                break;
+            case TOKEN_KEYWORD_CONST:    spec->is_const = 1; break;
+            case TOKEN_KEYWORD_VOLATILE: spec->is_volatile = 1; break;
+            case TOKEN_KEYWORD_INLINE:   spec->is_inline = 1; break;
+            case TOKEN_KEYWORD_RESTRICT: spec->is_restrict = 1; break;
+            default: break;
+        }
+    }
+
+    return spec;
+}
+
+Node *parse_type(void) {
+    Node *node = create_node(NODE_TYPE);
+
+    node->type_node.spec = parse_type_spec();
+
+    node->type_node.base = NULL;
+    node->type_node.decl = NULL;
+    node->type_node.is_decl = 0;
+
+    if (is_type(peek()->type)) {
+        node->type_node.base = strdup(peek()->lexeme);
+        node->type_node.is_decl = 0;
+        consume();
+    } else if (peek()->type == TOKEN_KEYWORD_STRUCT) {
+        node->type_node.decl = parse_struct_decl();
+        node->type_node.is_decl = 1;
+    } else if (peek()->type == TOKEN_KEYWORD_ENUM) {
+        node->type_node.decl = parse_enum_decl();
+        node->type_node.is_decl = 1;
+    } else {
+        node->type_node.base = strdup("int");
+        node->type_node.is_decl = 0;
+    }
+
+    while (peek()->type == TOKEN_OPERATOR_STAR) {
+        node->type_node.spec->pointer_depth++;
+        consume();
+    }
+
+    return node;
+}
+
+Node *parse_if_stmt(void) {
+    Node *node = create_node(NODE_IF_STMT);
+
+    expect(TOKEN_LPAREN, "Expected '(' after if keyword");
+    consume();
+    node->if_stmt.if_cond = parse_expr();
+    expect(TOKEN_RPAREN, "Expected ')' after if condition");
+    consume();
+
+    expect(TOKEN_LBRACE, "Expected '{' after if condition");
+    consume();
+    size_t body_count = 0;
+    node->if_stmt.if_body = parse_block(&body_count);
+    expect(TOKEN_RBRACE, "Expected '}' after if body");
+    consume();
+
+    node->if_stmt.elif_conds = NULL;
+    node->if_stmt.elif_bodies = NULL;
+    node->if_stmt.elif_count = 0;
+    node->if_stmt.else_body = NULL;
+
+    while (peek() && peek()->type == TOKEN_KEYWORD_ELSE && peek_next() && peek_next()->type == TOKEN_KEYWORD_IF) {
+        consume();
+        consume();
+
+        expect(TOKEN_LPAREN, "Expected '(' after 'elif'");
+        consume();
+        Expr *elif_cond = parse_expr();
+        expect(TOKEN_RPAREN, "Expected ')' after elif condition");
+        consume();
+
+        expect(TOKEN_LBRACE, "Expected '{' after elif condition");
+        consume();
+        size_t elif_body_count = 0;
+        Node **elif_body = parse_block(&elif_body_count);
+        if (!elif_body) {
+            elif_body = xcalloc(1, sizeof(Node*));
+        }
+        expect(TOKEN_RBRACE, "Expected '}' after elif body");
+        consume();
+
+        // Add to lists
+        node->if_stmt.elif_conds = xrealloc(node->if_stmt.elif_conds, sizeof(Expr*) * (node->if_stmt.elif_count + 1));
+        node->if_stmt.elif_bodies = xrealloc(node->if_stmt.elif_bodies, sizeof(Node**) * (node->if_stmt.elif_count + 1));
+
+        node->if_stmt.elif_conds[node->if_stmt.elif_count] = elif_cond;
+        node->if_stmt.elif_bodies[node->if_stmt.elif_count] = elif_body;
+        node->if_stmt.elif_count++;
+    }
+
+    if (peek() && peek()->type == TOKEN_KEYWORD_ELSE) {
+        consume();
+        expect(TOKEN_LBRACE, "Expected '{' after else");
+        consume();
+        size_t else_body_count = 0;
+        Node **else_body = parse_block(&else_body_count);
+        if (!else_body) {
+            else_body = xcalloc(1, sizeof(Node*)); // always null-terminated
+        }
+        node->if_stmt.else_body = else_body;
+        expect(TOKEN_RBRACE, "Expected '}' after else body");
+        consume();
+    }
+
+    return node;
 }

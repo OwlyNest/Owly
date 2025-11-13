@@ -27,7 +27,6 @@ const char* token_type_to_string(TokenType type) {
         case TOKEN_KEYWORD_FLOAT:           return "FLOAT";
         case TOKEN_KEYWORD_FOR:             return "FOR";
         case TOKEN_KEYWORD_FUNC:            return "FUNC";
-        case TOKEN_KEYWORD_GOTO:            return "GOTO";
         case TOKEN_KEYWORD_IF:              return "IF";
         case TOKEN_KEYWORD_INLINE:          return "INLINE";
         case TOKEN_KEYWORD_INT:             return "INT";
@@ -216,8 +215,6 @@ Token lexer_next_token(int debug) {
             tok.type = TOKEN_KEYWORD_FOR;
         else if (tok.length == 4 && strncmp(start, "func", 4) == 0)
             tok.type = TOKEN_KEYWORD_FUNC;
-        else if (tok.length == 4 && strncmp(start, "goto", 4) == 0)
-            tok.type = TOKEN_KEYWORD_GOTO;
         else if (tok.length == 2 && strncmp(start, "if", 2) == 0)
             tok.type = TOKEN_KEYWORD_IF;
         else if (tok.length == 6 && strncmp(start, "inline", 6) == 0)

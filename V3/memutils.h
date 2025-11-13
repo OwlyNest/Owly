@@ -7,5 +7,6 @@
 void *xmalloc(size_t size);
 void *xcalloc(size_t n, size_t size);
 void *xrealloc(void *prt, size_t size);
+void xfree(void *ptr);
 
 #endif

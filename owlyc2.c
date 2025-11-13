@@ -89,6 +89,7 @@ void parse_print_statement() {
 
         if (is_list_var(varname)) {
             // Print list as a C string array
+            // Future Amity: Dear god what did I do?
             fprintf(out,
                 "    printf(\"[\");\n"
                 "    for (int i = 0; %s[i] != NULL; i++) {\n"
@@ -384,9 +385,7 @@ void parse_for_statement() {
 
     fprintf(out, "    for (");
 
-    // Instead of calling parse_int_declaration(), parse initializer inline:
     if (current_token.type == TOKEN_KEYWORD_INT) {
-        // parse "int i = 0" manually here, without consuming semicolon
         next_token(); // consume 'int'
 
         if (current_token.type != TOKEN_IDENTIFIER) {
@@ -406,16 +405,13 @@ void parse_for_statement() {
         fprintf(out, "int %s = %.*s; ", varname, (int)current_token.length, current_token.lexeme);
         next_token();
     } else if (current_token.type == TOKEN_SYMBOL && current_token.lexeme[0] == ';') {
-        // Allow empty initializer
         fprintf(out, "; ");
         next_token();
     } else {
         error("unexpected token in for loop initializer");
     }
     next_token();
-    // Parse condition expression
     if (current_token.type == TOKEN_SYMBOL && current_token.lexeme[0] == ';') {
-        // Empty condition is allowed: e.g., for (; i < 10; i++)
         fprintf(out, "; ");
         next_token();
     } else {
@@ -425,7 +421,6 @@ void parse_for_statement() {
 
     fprintf(out, "; ");
 
-    // Parse increment expression
     parse_condition_expression();
 
     expect(TOKEN_SYMBOL, "expected ')' after for loop");

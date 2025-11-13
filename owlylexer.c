@@ -45,25 +45,21 @@ static void print_token(Token tok, int debug) {
                         TOKEN_TYPE_WIDTH, type_str,
                         lexeme_len, tok.lexeme);
 
-        // Calculate remaining space until alignment point
+
         int padding = MAX_DEBUG_LINE_WIDTH - n;
         if (padding < 0) padding = 0;
 
-        // Print final aligned output
         printf("%s%*s}\n", buffer, padding, "");
     }
 }
 
-// Lexer state: source pointer and current position
 static const char *src = NULL;
 static size_t pos = 0;
 
-// Return current char or 0 at end
 static char current_char() {
     return src[pos];
 }
 
-// Advance position
 static void advance() {
     if (src[pos] != '\0') pos++;
 }
@@ -82,10 +78,8 @@ static void skip_whitespace() {
 }
 
 Token lexer_next_token(int debug) {
-    // First, skip whitespace BEFORE printing debug or anything else
     skip_whitespace();
 
-    // Check if we reached the end after skipping whitespace
     if (current_char() == '\0') {
         Token tok;
         tok.type = TOKEN_EOF;
@@ -101,14 +95,12 @@ Token lexer_next_token(int debug) {
 
     const char *start = &src[pos];
 
-    // Identifier or keyword
     if (isalpha(current_char()) || current_char() == '_') {
         while (isalnum(current_char()) || current_char() == '_') advance();
         tok.type = TOKEN_IDENTIFIER;
         tok.lexeme = start;
         tok.length = &src[pos] - start;
 
-        // Keywords check
         if (tok.length == 4 && strncmp(start, "func", 4) == 0)
             tok.type = TOKEN_KEYWORD_FUNC;
         else if (tok.length == 5 && strncmp(start, "print", 5) == 0)
@@ -134,7 +126,6 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // Number literal
     if (isdigit(current_char())) {
         while (isdigit(current_char())) advance();
         tok.type = TOKEN_NUMBER;
@@ -144,15 +135,14 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // String literal
     if (current_char() == '"') {
-        advance(); // skip opening quote
+        advance();
         const char *str_start = &src[pos];
         while (current_char() != '\0' && current_char() != '"') {
             advance();
         }
         size_t len = &src[pos] - str_start;
-        if (current_char() == '"') advance(); // skip closing quote
+        if (current_char() == '"') advance();
 
         tok.type = TOKEN_STRING;
         tok.lexeme = str_start;
@@ -161,7 +151,6 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // Multi-character operators
     if (current_char() == '=' && src[pos + 1] == '=') {
         advance(); advance();
         tok.type = TOKEN_OPERATOR_EQ;
@@ -211,7 +200,6 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // Single-character operators
     if (current_char() == '<') {
         advance();
         tok.type = TOKEN_OPERATOR_LT;
@@ -229,7 +217,6 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // Symbols like [ and ]
     if (current_char() == '[') {
         advance();
         tok.type = TOKEN_SYMBOL;
@@ -247,7 +234,6 @@ Token lexer_next_token(int debug) {
         return tok;
     }
 
-    // Single-character symbol fallback
     tok.type = TOKEN_SYMBOL;
     tok.lexeme = start;
     tok.length = 1;

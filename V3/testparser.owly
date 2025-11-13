@@ -1,4 +1,7 @@
-func static int x(int a, const char *x) {
-    var register int x = 3;
-    ret x;
+if (x) {
+    var int x = i;
+} else if (y) {
+    var int y = i;
+} else if (z) {
+    var int z = i;
 }
