@@ -1,116 +1,105 @@
 {
 	"PROGRAM":	[{
-			"IF":	[{
-					"condition":	{
-						"EXPRESSION":	[{
-								"type":	"IDENTIFIER"
-							}, {
-								"name":	"x"
-							}]
-					}
+			"EXPRESSION":	[{
+					"type":	"CALL"
 				}, {
-					"body":	[{
-							"VAR_DECL":	[{
-									"type":	{
-										"TYPE":	[{
-												"storage":	"none",
-												"sign":	"none",
-												"length":	"none",
-												"const":	false,
-												"volatile":	false,
-												"inline":	false,
-												"restrict":	false,
-												"pointer_depth":	0
-											}, {
-												"base":	"int"
-											}]
-									}
-								}, {
-									"name":	"x"
-								}, {
-									"value":	{
-										"EXPRESSION":	[{
-												"type":	"IDENTIFIER"
-											}, {
-												"name":	"i"
-											}]
-									}
-								}]
-						}]
+					"func":	"pow"
 				}, {
-					"else if":	[{
-							"condition":	{
-								"EXPRESSION":	[{
-										"type":	"IDENTIFIER"
-									}, {
-										"name":	"y"
-									}]
-							},
-							"body":	[{
-									"VAR_DECL":	[{
-											"type":	{
-												"TYPE":	[{
-														"storage":	"none",
-														"sign":	"none",
-														"length":	"none",
-														"const":	false,
-														"volatile":	false,
-														"inline":	false,
-														"restrict":	false,
-														"pointer_depth":	0
-													}, {
-														"base":	"int"
-													}]
-											}
-										}, {
-											"name":	"y"
-										}, {
-											"value":	{
-												"EXPRESSION":	[{
-														"type":	"IDENTIFIER"
-													}, {
-														"name":	"i"
-													}]
-											}
+					"args":	[{
+							"EXPRESSION":	[{
+									"type":	"CALL"
+								}, {
+									"func":	"exp"
+								}, {
+									"args":	[{
+											"EXPRESSION":	[{
+													"type":	"BINARY"
+												}, {
+													"op":	"/"
+												}, {
+													"left":	{
+														"EXPRESSION":	[{
+																"type":	"GROUP"
+															}, {
+																"inner":	{
+																	"EXPRESSION":	[{
+																			"type":	"BINARY"
+																		}, {
+																			"op":	"<<"
+																		}, {
+																			"left":	{
+																				"EXPRESSION":	[{
+																						"type":	"GROUP"
+																					}, {
+																						"inner":	{
+																							"EXPRESSION":	[{
+																									"type":	"BINARY"
+																								}, {
+																									"op":	"+"
+																								}, {
+																									"left":	{
+																										"EXPRESSION":	[{
+																												"type":	"LITERAL"
+																											}, {
+																												"value":	"1"
+																											}]
+																									}
+																								}, {
+																									"right":	{
+																										"EXPRESSION":	[{
+																												"type":	"BINARY"
+																											}, {
+																												"op":	"*"
+																											}, {
+																												"left":	{
+																													"EXPRESSION":	[{
+																															"type":	"IDENTIFIER"
+																														}, {
+																															"name":	"x"
+																														}]
+																												}
+																											}, {
+																												"right":	{
+																													"EXPRESSION":	[{
+																															"type":	"LITERAL"
+																														}, {
+																															"value":	"2"
+																														}]
+																												}
+																											}]
+																									}
+																								}]
+																						}
+																					}]
+																			}
+																		}, {
+																			"right":	{
+																				"EXPRESSION":	[{
+																						"type":	"LITERAL"
+																					}, {
+																						"value":	"5"
+																					}]
+																			}
+																		}]
+																}
+															}]
+													}
+												}, {
+													"right":	{
+														"EXPRESSION":	[{
+																"type":	"LITERAL"
+															}, {
+																"value":	"3"
+															}]
+													}
+												}]
 										}]
 								}]
-						}]
-				}, {
-					"else if":	[{
-							"condition":	{
-								"EXPRESSION":	[{
-										"type":	"IDENTIFIER"
-									}, {
-										"name":	"z"
-									}]
-							},
-							"body":	[{
-									"VAR_DECL":	[{
-											"type":	{
-												"TYPE":	[{
-														"storage":	"none",
-														"sign":	"none",
-														"length":	"none",
-														"const":	false,
-														"volatile":	false,
-														"inline":	false,
-														"restrict":	false,
-														"pointer_depth":	0
-													}, {
-														"base":	"int"
-													}]
-											}
-										}, {
-											"name":	"z"
-										}, {
-											"value":	{
-												"EXPRESSION":	[{
-														"type":	"IDENTIFIER"
-													}, {
-														"name":	"i"
-													}]
-											}
-										}]
+						}, {
+							"EXPRESSION":	[{
+									"type":	"LITERAL"
+								}, {
+									"value":	"2"
 								}]
 						}]
 				}]

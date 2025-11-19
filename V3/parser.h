@@ -37,11 +37,15 @@ Node **parse_block(size_t *out_count);
 Node *parse_expression(void);
 Node *parse_enum_decl(void);
 Node *parse_struct_decl(void);
+Node *parse_union_decl(void);
 Node *parse_while_stmt(void);
 Node *parse_do_while_stmt(void);
 Node *parse_for_stmt(void);
 TypeSpec *parse_type_spec(void);
 Node *parse_type(void);
 Node *parse_if_stmt(void);
+Node *parse_switch_stmt(void);
+Node *parse_misc_stmt(void);
+Node *parse_typedef(void);
 
 #endif

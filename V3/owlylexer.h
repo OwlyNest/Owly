@@ -9,12 +9,12 @@ typedef enum TokenType {
     TOKEN_UNKNOWN,
 
     TOKEN_KEYWORD_AUTO,                // done
-    TOKEN_KEYWORD_BREAK,               // not done
-    TOKEN_KEYWORD_CASE,                // not done
+    TOKEN_KEYWORD_BREAK,               // done
+    TOKEN_KEYWORD_CASE,                // done
     TOKEN_KEYWORD_CHAR,                // done
     TOKEN_KEYWORD_CONST,               // done
-    TOKEN_KEYWORD_CONTINUE,            // not done
-    TOKEN_KEYWORD_DEFAULT,             // not done
+    TOKEN_KEYWORD_CONTINUE,            // done
+    TOKEN_KEYWORD_DEFAULT,             // done
     TOKEN_KEYWORD_DO,                  // done
     TOKEN_KEYWORD_DOUBLE,              // done
     TOKEN_KEYWORD_ELSE,                // done
@@ -32,12 +32,11 @@ typedef enum TokenType {
     TOKEN_KEYWORD_RETURN,              // done
     TOKEN_KEYWORD_SHORT,               // done
     TOKEN_KEYWORD_SIGNED,              // done
-    TOKEN_KEYWORD_SIZEOF,              // not done
     TOKEN_KEYWORD_STATIC,              // done
     TOKEN_KEYWORD_STRUCT,              // done
-    TOKEN_KEYWORD_SWITCH,              // not done
-    TOKEN_KEYWORD_TYPEDEF,             // not done
-    TOKEN_KEYWORD_UNION,               // not done
+    TOKEN_KEYWORD_SWITCH,              // done
+    TOKEN_KEYWORD_TYPEDEF,             // done
+    TOKEN_KEYWORD_UNION,               // done
     TOKEN_KEYWORD_UNSIGNED,            // done
     TOKEN_KEYWORD_VAR,                 // done
     TOKEN_KEYWORD_VOID,                // done
@@ -82,20 +81,20 @@ typedef enum TokenType {
     TOKEN_OPERATOR_BITSHRASSIGN,       // >>=
     TOKEN_OPERATOR_POINT,              // .
     TOKEN_OPERATOR_ARROW,              // ->
-    TOKEN_OPERATOR_ELLIPSIS,           // ...
+    TOKEN_OPERATOR_ELLIPSIS,           // ... // not done
 
     TOKEN_LPAREN,                      // (
     TOKEN_RPAREN,                      // )
-    TOKEN_LBRACKET,                    // [
-    TOKEN_RBRACKET,                    // ]
+    TOKEN_LBRACKET,                    // [ // not done
+    TOKEN_RBRACKET,                    // ] // not done
     TOKEN_LBRACE,                      // {
     TOKEN_RBRACE,                      // }
 
     TOKEN_COMMA,                       // ,
     TOKEN_COLON,                       // :
     TOKEN_SEMICOLON,                   // ;
-    TOKEN_QUESTION,                    // ?
-    TOKEN_HASH,                        // #
+    TOKEN_QUESTION,                    // ? // not done
+    TOKEN_HASH,                        // # // not done
     
     TOKEN_IDENTIFIER,
 

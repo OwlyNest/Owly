@@ -108,6 +108,14 @@ void free_ast(Node *node) {
             xfree(node->struct_decl.members);
             break;
 
+        case NODE_UNION_DECL:
+            xfree((void *)node->union_decl.name);
+            for (size_t i = 0; i < node->union_decl.member_count; i++) {
+                free_ast(node->union_decl.members[i]);
+            }
+            xfree(node->union_decl.members);
+            break;
+
         case NODE_WHILE_STMT:
             free_expr(node->while_stmt.cond);
             for (size_t i = 0; node->while_stmt.body[i]; i++) {
@@ -180,8 +188,37 @@ void free_ast(Node *node) {
                 xfree(node->if_stmt.else_body);
             }
             break;
+
+        case NODE_SWITCH_STMT:
+            free_expr(node->switch_stmt.expression);
+            if (node->switch_stmt.case_count) {
+                for (size_t i = 0; i < node->switch_stmt.case_count; i++) {
+                    free_expr(node->switch_stmt.cases[i]);
+                    if (node->switch_stmt.case_bodies[i]) {
+                        for (size_t j = 0; node->switch_stmt.case_bodies[i][j]; j++)
+                            free_ast(node->switch_stmt.case_bodies[i][j]);
+                        xfree(node->switch_stmt.case_bodies[i]);
+                    }
+                }
+                xfree(node->switch_stmt.cases);
+                xfree(node->switch_stmt.case_bodies);
+            }
+
+            for (size_t i = 0; node->switch_stmt.default_body[i]; i++) {
+                free_ast(node->switch_stmt.default_body[i]);
+            }
+            xfree(node->switch_stmt.default_body);
+            break;
+
+        case NODE_MISC:
+            xfree(node->misc.name);
+            break;
         
-            
+        case NODE_TYPEDEF:
+            xfree(node->typedef_node.name);
+            free_ast(node->typedef_node.type);
+            break;
+
         default:
 			printf("[X] How did you get here?\n");
             break;

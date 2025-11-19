@@ -67,12 +67,16 @@ Node **parse_block(size_t *out_count);
 Node *parse_expression(void);
 Node *parse_enum_decl(void);
 Node *parse_struct_decl(void);
+Node *parse_union_decl(void);
 Node *parse_while_stmt(void);
 Node *parse_do_while_stmt(void);
 Node *parse_for_stmt(void);
 TypeSpec *parse_type_spec(void);
 Node *parse_type(void);
 Node *parse_if_stmt(void);
+Node *parse_switch_stmt(void);
+Node *parse_misc_stmt(void);
+Node *parse_typedef(void);
 
 /* --- Functions --- */
 void parser_error(const char *msg, Token *t) {
@@ -346,7 +350,6 @@ TokenType type_from_string(const char *str) {
     else if (strncmp(str, "RETURN", sizeof("RETURN")) == 0) return TOKEN_KEYWORD_RETURN;
     else if (strncmp(str, "SHORT", sizeof("SHORT")) == 0) return TOKEN_KEYWORD_SHORT;
     else if (strncmp(str, "SIGNED", sizeof("SIGNED")) == 0) return TOKEN_KEYWORD_SIGNED;
-    else if (strncmp(str, "SIZEOF", sizeof("SIZEOF")) == 0) return TOKEN_KEYWORD_SIZEOF;
     else if (strncmp(str, "STATIC", sizeof("STATIC")) == 0) return TOKEN_KEYWORD_STATIC;
     else if (strncmp(str, "STRUCT", sizeof("STRUCT")) == 0) return TOKEN_KEYWORD_STRUCT;
     else if (strncmp(str, "SWITCH", sizeof("SWITCH")) == 0) return TOKEN_KEYWORD_SWITCH;
@@ -552,6 +555,13 @@ Node *parse_arg_decl(void) {
     
     Token *name = consume();
     node->var_decl.name = strdup(name->lexeme);
+
+    if (peek()->type != TOKEN_SEMICOLON) {
+        if (peek() && (peek()->type == TOKEN_OPERATOR_ASSIGN)) {
+            consume();
+            node->var_decl.value = parse_expr();   
+        }
+    }
     return node;
 }
 
@@ -572,6 +582,10 @@ Node *parse_ret(void) {
 }
 
 Node **parse_block(size_t *out_count) {
+    /*
+        * Pattern:
+        * unnecessary
+    */
     Node **body = NULL;
     *out_count = 0;
 
@@ -609,6 +623,17 @@ Node **parse_block(size_t *out_count) {
         } else if (tok->type == TOKEN_KEYWORD_IF) {
             consume();
             stmt = parse_if_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_UNION) {
+            consume();
+            stmt = parse_union_decl();
+        } else if (tok->type == TOKEN_KEYWORD_SWITCH) {
+            consume();
+            stmt = parse_switch_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_BREAK || tok->type == TOKEN_KEYWORD_CONTINUE) {
+            stmt = parse_misc_stmt();
+        } else if (tok->type == TOKEN_KEYWORD_TYPEDEF) {
+            consume();
+            stmt = parse_typedef();
         } else {
             printf("skipped token %zu (%s)\n", pos, token_type_to_string(tok->type));
             consume();
@@ -622,6 +647,10 @@ Node **parse_block(size_t *out_count) {
 }
 
 Node *parse_expression(void) {
+    /*
+        * Pattern:
+        * unnecessary
+    */
     Node *expr_node = create_node(NODE_EXPR);
     expr_node->expr.expr = parse_expr();
 
@@ -692,6 +721,9 @@ Node *parse_enum_decl(void) {
             parser_error("Expected ',' or '}' after enum member", bad);
         }
     }
+    if (!(node->enum_decl.name) && peek()->type == TOKEN_IDENTIFIER) {
+        node->enum_decl.name = strdup(consume()->lexeme);
+    }
 
     expect(TOKEN_SEMICOLON, "Expected ';' after enum declaration");
     consume();
@@ -701,7 +733,7 @@ Node *parse_enum_decl(void) {
 Node *parse_struct_decl(void) {
     /*
         * Pattern:
-        * union name {members};
+        * struct name {members};
     */
     Node *node = create_node(NODE_STRUCT_DECL);
 
@@ -746,11 +778,75 @@ Node *parse_struct_decl(void) {
         consume();
     }
 
+    if (!(node->struct_decl.name) && peek()->type == TOKEN_IDENTIFIER) {
+        node->struct_decl.name = strdup(consume()->lexeme);
+    }
+
     expect(TOKEN_SEMICOLON, "Expected ';' after struct declaration");
     consume();
 
     node->struct_decl.members = members;
     node->struct_decl.member_count = members_count;
+    return node;
+}
+
+Node *parse_union_decl(void) {
+    /*
+        * Pattern:
+        * union name {members};
+    */
+    Node *node = create_node(NODE_UNION_DECL);
+
+    // name
+    Token *name = peek();
+    if (name && name->type == TOKEN_IDENTIFIER) {
+        consume();
+        node->union_decl.name = strdup(name->lexeme);
+    } else {
+        node->union_decl.name = NULL; // Anon union
+    }
+
+    expect(TOKEN_LBRACE, "Expected '{' after union name");
+    consume();
+
+    // members
+    Node **members = NULL;
+    size_t members_count = 0;
+
+    while (1) {
+        Token *t = peek();
+
+        if (!t) {
+            parser_error("Unexpected end of input in union declaration", t);
+            break;
+        }
+
+        if (t->type == TOKEN_RBRACE) {
+            consume();
+            break;
+        }
+        
+        Node *member = parse_arg_decl();
+        if (!member) {
+            parser_error("Expected member", t);
+            break;
+        }
+        members = xrealloc(members, sizeof(Node *) * (members_count + 1));
+        members[members_count++] = member;
+
+        expect(TOKEN_SEMICOLON, "Expected semicolon after union member");
+        consume();
+    }
+
+    if (!(node->union_decl.name) && peek()->type == TOKEN_IDENTIFIER) {
+        node->union_decl.name = strdup(consume()->lexeme);
+    }
+
+    expect(TOKEN_SEMICOLON, "Expected ';' after union declaration");
+    consume();
+
+    node->union_decl.members = members;
+    node->union_decl.member_count = members_count;
     return node;
 }
 
@@ -815,6 +911,10 @@ Node *parse_do_while_stmt(void) {
 }
 
 Node *parse_for_stmt(void) {
+    /*
+        * Pattern:
+        * for ([inc];[cond];[inc]) {body}
+    */
     Node *node = create_node(NODE_FOR_STMT);
 
     // initialiser
@@ -920,6 +1020,10 @@ Node *parse_type(void) {
 }
 
 Node *parse_if_stmt(void) {
+    /*
+        * Pattern:
+        * if (cond) {body} [if else|else {body}]
+    */
     Node *node = create_node(NODE_IF_STMT);
 
     expect(TOKEN_LPAREN, "Expected '(' after if keyword");
@@ -983,5 +1087,146 @@ Node *parse_if_stmt(void) {
         consume();
     }
 
+    return node;
+}
+
+Node *parse_switch_stmt(void) {
+    Node *node = create_node(NODE_SWITCH_STMT);
+
+    node->switch_stmt.cases        = NULL;
+    node->switch_stmt.case_bodies  = NULL;
+    node->switch_stmt.case_count   = 0;
+    node->switch_stmt.default_body = NULL;
+
+    expect(TOKEN_LPAREN, "Expected '(' after switch keyword");
+    consume();
+
+    node->switch_stmt.expression = parse_expr();
+
+    expect(TOKEN_RPAREN, "Expected ')' after switch expression");
+    consume();
+
+    expect(TOKEN_LBRACE, "Expected '{' after switch expression");
+    consume();
+
+    size_t capacity = 4;
+    node->switch_stmt.cases       = xmalloc(sizeof(struct Expr *) * capacity);
+    node->switch_stmt.case_bodies = xmalloc(sizeof(struct Node **) * capacity);
+
+    while (peek()->type != TOKEN_RBRACE &&
+           peek()->type != TOKEN_EOF)
+    {
+        Token *t = peek();
+
+        if (t->type == TOKEN_KEYWORD_CASE) {
+            consume();
+
+            expect(TOKEN_LPAREN, "Expected '(' after case");
+            consume();
+
+            Expr *case_expr = parse_expr();
+
+            expect(TOKEN_RPAREN, "Expected ')' after case expression");
+            consume();
+
+            expect(TOKEN_LBRACE, "Expected '{' to start case body");
+            consume();
+
+            size_t stmt_count = 0;
+            Node **stmts = parse_block(&stmt_count);
+
+            expect(TOKEN_RBRACE, "Expected '}' after case body");
+            consume();
+
+            // ensure capacity
+            if (node->switch_stmt.case_count >= capacity) {
+                capacity *= 2;
+
+                node->switch_stmt.cases =
+                    xrealloc(node->switch_stmt.cases,
+                             sizeof(struct Expr *) * capacity);
+
+                node->switch_stmt.case_bodies =
+                    xrealloc(node->switch_stmt.case_bodies,
+                             sizeof(struct Node **) * capacity);
+            }
+
+            size_t idx = node->switch_stmt.case_count++;
+            node->switch_stmt.cases[idx] = case_expr;
+            node->switch_stmt.case_bodies[idx] = stmts;
+            continue;
+        }
+
+        if (t->type == TOKEN_KEYWORD_DEFAULT) {
+            consume();
+
+            expect(TOKEN_LBRACE, "Expected '{' after default");
+            consume();
+
+            size_t stmt_count = 0;
+            node->switch_stmt.default_body = parse_block(&stmt_count);
+
+            expect(TOKEN_RBRACE, "Expected '}' after default body");
+            consume();
+
+            continue;
+        }
+
+        parser_error("Expected 'case' or 'default' inside switch", t);
+        break;
+    }
+
+    expect(TOKEN_RBRACE, "Expected '}' after switch body");
+    consume();
+
+    return node;
+}
+
+Node *parse_misc_stmt(void) {
+    Node *node = create_node(NODE_MISC);
+
+    Token *tok = peek();
+    if (tok->type != TOKEN_KEYWORD_BREAK && tok->type != TOKEN_KEYWORD_CONTINUE) {
+        parser_error("Expected 'break' or 'continue'", tok);
+        return NULL;
+    }
+    node->misc.name = strdup(tok->lexeme);
+    consume();
+
+    expect(TOKEN_SEMICOLON, "Expected semicolon after statement");
+    consume();
+    return node;
+}
+
+Node *parse_typedef(void) {
+    /*
+        * Pattern:
+        * typedef [type | struct | union | enum] name;
+    */
+    Node *node = create_node(NODE_TYPEDEF);
+
+    Token *t = peek();
+    if (t->type == TOKEN_KEYWORD_STRUCT) {
+        consume();
+        Node *type = parse_struct_decl();
+        node->typedef_node.type = type;
+        node->typedef_node.name = strdup(type->struct_decl.name);
+    } else if (t->type == TOKEN_KEYWORD_UNION) {
+        consume();
+        Node *type = parse_union_decl();
+        node->typedef_node.type = type;
+        node->typedef_node.name = strdup(type->union_decl.name);
+    } else if (t->type == TOKEN_KEYWORD_ENUM) {
+        consume();
+        Node *type = parse_enum_decl();
+        node->typedef_node.type = type;
+        node->typedef_node.name = strdup(type->enum_decl.name);
+    } else {
+        Node *type = parse_arg_decl();
+        node->typedef_node.type = type;
+        node->typedef_node.name = strdup(type->var_decl.name);
+        expect(TOKEN_SEMICOLON, "expected ';' after typedef");
+        consume();
+    }
     return node;
 }

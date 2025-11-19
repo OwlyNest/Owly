@@ -36,7 +36,6 @@ const char* token_type_to_string(TokenType type) {
         case TOKEN_KEYWORD_RETURN:          return "RETURN";
         case TOKEN_KEYWORD_SHORT:           return "SHORT";
         case TOKEN_KEYWORD_SIGNED:          return "SIGNED";
-        case TOKEN_KEYWORD_SIZEOF:          return "SIZEOF";
         case TOKEN_KEYWORD_STATIC:          return "STATIC";
         case TOKEN_KEYWORD_STRUCT:          return "STRUCT";
         case TOKEN_KEYWORD_SWITCH:          return "SWITCH";
@@ -233,8 +232,6 @@ Token lexer_next_token(int debug) {
             tok.type = TOKEN_KEYWORD_SHORT;
         else if (tok.length == 6 && strncmp(start, "signed", 6) == 0)
             tok.type = TOKEN_KEYWORD_SIGNED;
-        else if (tok.length == 6 && strncmp(start, "sizeof", 6) == 0)
-            tok.type = TOKEN_KEYWORD_SIZEOF;
         else if (tok.length == 6 && strncmp(start, "static", 6) == 0)
             tok.type = TOKEN_KEYWORD_STATIC;
         else if (tok.length == 6 && strncmp(start, "struct", 6) == 0)

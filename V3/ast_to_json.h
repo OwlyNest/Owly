@@ -42,9 +42,13 @@ cJSON *return_stmt_to_json(Node *node);
 cJSON *expr_to_json(Expr *expr);
 cJSON *enum_to_json(Node *node);
 cJSON *struct_to_json(Node *node);
+cJSON *union_to_json(Node *node);
 cJSON *while_to_json(Node *node);
 cJSON *do_while_to_json(Node *node);
 cJSON *for_to_json(Node *node);
 cJSON *type_node_to_json(Node *node);
 cJSON *if_stmt_to_json(Node *node);
+cJSON *switch_to_json(Node *node);
+cJSON *misc_to_json(Node *node);
+cJSON *typedef_to_json(Node *node);
 #endif

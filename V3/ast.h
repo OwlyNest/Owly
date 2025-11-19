@@ -41,6 +41,10 @@ typedef enum {
 	NODE_FOR_STMT,
 	NODE_TYPE,
 	NODE_IF_STMT,
+	NODE_UNION_DECL,
+	NODE_SWITCH_STMT,
+	NODE_MISC,
+	NODE_TYPEDEF
 } NodeType;
 
 typedef struct {
@@ -69,6 +73,7 @@ typedef struct {
 	* In a future semantic pass, this should be replaced with the above TypeSpec struct
 	* that keeps track of storage, sign, qualifiers, length, and base_type properly.
 	* Update: Fuck that!
+	* Update: Unfuck that!
 */
 
 typedef struct Node {
@@ -116,6 +121,12 @@ typedef struct Node {
 		} struct_decl;
 
 		struct {
+			const char *name;
+			struct Node **members;
+			size_t member_count;
+		} union_decl;
+
+		struct {
 			struct Expr *cond;
 			struct Node **body;
 		} while_stmt;
@@ -141,8 +152,6 @@ typedef struct Node {
 			int is_decl;
 		} type_node;
 
-		/* NOT IMPLEMENTED */
-
 		// I am scared of if statements
 		struct {
 			struct Expr *if_cond;
@@ -153,6 +162,23 @@ typedef struct Node {
 			struct Node **else_body;
 		} if_stmt;
 
+		struct {
+			struct Expr *expression;
+			struct Expr **cases;        // switch (thing) {case (something))}
+									    //thing and something both are expressions.
+			struct Node ***case_bodies; // Oh no, not again
+			size_t case_count;
+			struct Node **default_body;
+		} switch_stmt;
+
+		struct {
+			char *name;
+		} misc;
+
+		struct {
+			char *name;
+			struct Node *type;
+		} typedef_node;
 	};
 } Node;
 

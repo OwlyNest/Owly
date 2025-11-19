@@ -34,8 +34,5 @@ void xfree(void *ptr) {
     if (ptr) {
         free(ptr);
         ptr = NULL;
-    } else {
-        perror("free");
-        exit(1);
     }
 }

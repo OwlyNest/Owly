@@ -43,11 +43,15 @@ cJSON *return_stmt_to_json(Node *node);
 cJSON *expr_to_json(Expr *expr);
 cJSON *enum_to_json(Node *node);
 cJSON *struct_to_json(Node *node);
+cJSON *union_to_json(Node *node);
 cJSON *while_to_json(Node *node);
 cJSON *do_while_to_json(Node *node);
 cJSON *for_to_json(Node *node);
 cJSON *type_node_to_json(Node *node);
 cJSON *if_stmt_to_json(Node *node);
+cJSON *switch_to_json(Node *node);
+cJSON *misc_to_json(Node *node);
+cJSON *typedef_to_json(Node *node);
 /* --- Main ---*/
 
 
@@ -84,6 +88,8 @@ cJSON *node_to_json(Node *node) {
 			return enum_to_json(node);
 		case NODE_STRUCT_DECL:
 			return struct_to_json(node);
+		case NODE_UNION_DECL:
+			return union_to_json(node);
 		case NODE_WHILE_STMT:
 			return while_to_json(node);
 		case NODE_DO_WHILE_STMT:
@@ -94,6 +100,12 @@ cJSON *node_to_json(Node *node) {
 			return type_node_to_json(node);
 		case NODE_IF_STMT:
 			return if_stmt_to_json(node);
+		case NODE_SWITCH_STMT:
+			return switch_to_json(node);
+		case NODE_MISC:
+			return misc_to_json(node);
+		case NODE_TYPEDEF:
+			return typedef_to_json(node);
 		default:
 			return cJSON_CreateString("<unknown node>");
 	}
@@ -339,6 +351,33 @@ cJSON *struct_to_json(Node *node) {
 	return wrapper;
 }
 
+cJSON *union_to_json(Node *node) {
+	cJSON *union_arr = cJSON_CreateArray();
+
+	cJSON *name_obj = cJSON_CreateObject();
+	if (node->union_decl.name) {
+		cJSON_AddStringToObject(name_obj, "name", node->union_decl.name);
+	} else {
+		cJSON_AddNullToObject(name_obj, "name");
+	}
+	cJSON_AddItemToArray(union_arr, name_obj);	
+
+	cJSON *args_arr = cJSON_CreateArray();
+    for (size_t i = 0; i < node->union_decl.member_count; i++) {
+        Node *arg = node->union_decl.members[i];
+        cJSON *arg_obj = node_to_json(arg);
+		cJSON_AddItemToArray(args_arr, arg_obj);
+    }
+
+    cJSON *args_obj = cJSON_CreateObject();
+    cJSON_AddItemToObject(args_obj, "args", args_arr);
+    cJSON_AddItemToArray(union_arr, args_obj);
+
+	cJSON *wrapper = cJSON_CreateObject();
+	cJSON_AddItemToObject(wrapper, "UNION", union_arr);
+	return wrapper;
+}
+
 cJSON *while_to_json(Node *node) {
 	cJSON *while_arr = cJSON_CreateArray();
 
@@ -549,4 +588,73 @@ cJSON *if_stmt_to_json(Node *node) {
     cJSON *wrapper = cJSON_CreateObject();
     cJSON_AddItemToObject(wrapper, "IF", if_arr);
     return wrapper;
+}
+
+cJSON *switch_to_json(Node *node) {
+	cJSON *switch_arr = cJSON_CreateArray();
+
+	cJSON *expr_obj = cJSON_CreateObject();
+    cJSON_AddItemToObject(expr_obj, "expression", expr_to_json(node->switch_stmt.expression));
+    cJSON_AddItemToArray(switch_arr, expr_obj);
+
+	if (node->switch_stmt.case_count > 0) {
+        for (size_t i = 0; i < node->switch_stmt.case_count; i++) {
+			cJSON *case_arr = cJSON_CreateArray();
+            cJSON *case_obj = cJSON_CreateObject();
+            cJSON_AddItemToObject(case_obj, "condition", expr_to_json(node->switch_stmt.cases[i]));
+
+            cJSON *case_body_arr = cJSON_CreateArray();
+            if (node->switch_stmt.case_bodies[i]) {
+                for (size_t j = 0; node->switch_stmt.case_bodies[i][j]; j++) {
+                    cJSON_AddItemToArray(case_body_arr, node_to_json(node->switch_stmt.case_bodies[i][j]));
+                }
+            }
+            cJSON_AddItemToObject(case_obj, "body", case_body_arr);
+            cJSON_AddItemToArray(case_arr, case_obj);
+
+			cJSON *case_wrapper = cJSON_CreateObject();
+			cJSON_AddItemToObject(case_wrapper, "case", case_arr);
+			cJSON_AddItemToArray(switch_arr, case_wrapper);
+        }
+    }
+
+	if (node->switch_stmt.default_body) {
+        cJSON *default_body_arr = cJSON_CreateArray();
+        for (size_t i = 0; node->switch_stmt.default_body[i]; i++) {
+            cJSON_AddItemToArray(default_body_arr, node_to_json(node->switch_stmt.default_body[i]));
+        }
+        cJSON *default_body_obj = cJSON_CreateObject();
+        cJSON_AddItemToObject(default_body_obj, "default", default_body_arr);
+        cJSON_AddItemToArray(switch_arr, default_body_obj);
+    }
+
+	cJSON *wrapper = cJSON_CreateObject();
+    cJSON_AddItemToObject(wrapper, "SWITCH", switch_arr);
+	return wrapper;
+}
+
+cJSON *misc_to_json(Node *node) {
+	cJSON *wrapper = cJSON_CreateObject();
+    cJSON_AddStringToObject(wrapper, "MISC", node->misc.name);
+	return wrapper;
+}
+
+cJSON *typedef_to_json(Node *node) {
+	cJSON *typedef_arr = cJSON_CreateArray();
+
+	cJSON *name_obj = cJSON_CreateObject();
+    cJSON_AddStringToObject(name_obj, "name", node->typedef_node.name);
+    cJSON_AddItemToArray(typedef_arr, name_obj);
+
+	cJSON *type_obj = cJSON_CreateObject();
+	cJSON *type_arr = cJSON_CreateArray();
+
+	cJSON_AddItemToArray(type_arr, node_to_json(node->typedef_node.type));
+	cJSON_AddItemToObject(type_obj, "type", type_arr);
+
+	cJSON_AddItemToArray(typedef_arr, type_obj);
+
+	cJSON *wrapper = cJSON_CreateObject();
+    cJSON_AddItemToObject(wrapper, "TYPEDEF", typedef_arr);
+	return wrapper;
 }

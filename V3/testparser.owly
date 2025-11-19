@@ -1,7 +1,30 @@
-if (x) {
-    var int x = i;
-} else if (y) {
-    var int y = i;
-} else if (z) {
-    var int z = i;
+typedef enum {
+	NODE_PROGRAM,
+	NODE_VAR_DECL,
+	NODE_FUNC_DECL,
+	NODE_RETURN,
+	NODE_EXPR,
+	NODE_ENUM_DECL,
+	NODE_STRUCT_DECL,
+	NODE_WHILE_STMT,
+	NODE_DO_WHILE_STMT,
+	NODE_FOR_STMT,
+	NODE_TYPE,
+	NODE_IF_STMT,
+	NODE_UNION_DECL,
+	NODE_SWITCH_STMT,
+	NODE_MISC,
+	NODE_TYPEDEF
+} NodeType;
+
+typedef struct {
+	char *name;
+	Expr *value;
+} EnumMember;
+
+func static int main(void) {
+    var register int x = 0;
+    var int *x = &x;
+    var int y = pow(exp(((1+x*2)<<5)/3), 3);
+    ret y;
 }
