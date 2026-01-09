@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "owlylexer.h"
 #include "parser.h"
 #include "memutils.h"
+#include "SA.h"
 
 const char* name;
 
@@ -51,11 +53,19 @@ int main(int argc, char *argv[]) {
     }
 
     scan(source);
-
+    sleep(1);
     // Parser parser;
-    parser_init();
+    Node *ast = parser_init();
+
+
+    if (analyze_semantics(ast) != 0) {
+        fprintf(stderr, "Semantic analysis failed!\n");
+        free_parser(ast);
+        return 1;
+    }
 
     fclose(out);
+    free_parser(ast);
     free(source);
     return 0;
 }

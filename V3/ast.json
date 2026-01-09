@@ -1,107 +1,44 @@
 {
 	"PROGRAM":	[{
-			"EXPRESSION":	[{
-					"type":	"CALL"
+			"TYPEDEF":	[{
+					"name":	"E"
 				}, {
-					"func":	"pow"
-				}, {
-					"args":	[{
-							"EXPRESSION":	[{
-									"type":	"CALL"
+					"type":	[{
+							"ENUM":	[{
+									"name":	"E"
 								}, {
-									"func":	"exp"
-								}, {
-									"args":	[{
+									"members":	[{
 											"EXPRESSION":	[{
-													"type":	"BINARY"
+													"type":	"LITERAL"
 												}, {
-													"op":	"/"
-												}, {
-													"left":	{
-														"EXPRESSION":	[{
-																"type":	"GROUP"
-															}, {
-																"inner":	{
-																	"EXPRESSION":	[{
-																			"type":	"BINARY"
-																		}, {
-																			"op":	"<<"
-																		}, {
-																			"left":	{
-																				"EXPRESSION":	[{
-																						"type":	"GROUP"
-																					}, {
-																						"inner":	{
-																							"EXPRESSION":	[{
-																									"type":	"BINARY"
-																								}, {
-																									"op":	"+"
-																								}, {
-																									"left":	{
-																										"EXPRESSION":	[{
-																												"type":	"LITERAL"
-																											}, {
-																												"value":	"1"
-																											}]
-																									}
-																								}, {
-																									"right":	{
-																										"EXPRESSION":	[{
-																												"type":	"BINARY"
-																											}, {
-																												"op":	"*"
-																											}, {
-																												"left":	{
-																													"EXPRESSION":	[{
-																															"type":	"IDENTIFIER"
-																														}, {
-																															"name":	"x"
-																														}]
-																												}
-																											}, {
-																												"right":	{
-																													"EXPRESSION":	[{
-																															"type":	"LITERAL"
-																														}, {
-																															"value":	"2"
-																														}]
-																												}
-																											}]
-																									}
-																								}]
-																						}
-																					}]
-																			}
-																		}, {
-																			"right":	{
-																				"EXPRESSION":	[{
-																						"type":	"LITERAL"
-																					}, {
-																						"value":	"5"
-																					}]
-																			}
-																		}]
-																}
-															}]
-													}
-												}, {
-													"right":	{
-														"EXPRESSION":	[{
-																"type":	"LITERAL"
-															}, {
-																"value":	"3"
-															}]
-													}
+													"value":	"1"
 												}]
+										}, {
+											"name":	"X"
 										}]
 								}]
-						}, {
-							"EXPRESSION":	[{
-									"type":	"LITERAL"
-								}, {
-									"value":	"2"
-								}]
 						}]
+				}]
+		}, {
+			"VAR_DECL":	[{
+					"type":	{
+						"TYPE":	[{
+								"storage":	"none",
+								"sign":	"none",
+								"length":	"none",
+								"const":	false,
+								"volatile":	false,
+								"inline":	false,
+								"restrict":	false,
+								"pointer_depth":	0
+							}, {
+								"base":	"int"
+							}]
+					}
+				}, {
+					"name":	"X"
+				}, {
+					"value":	"<uninitialized>"
 				}]
 		}]
 }

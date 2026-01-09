@@ -1,0 +1,15 @@
+{
+	"global_scope":	{
+		"type":	"global",
+		"symbols":	[{
+				"name":	"E",
+				"kind":	"typedef"
+			}, {
+				"name":	"X",
+				"kind":	"variable",
+				"initialised":	0
+			}]
+	},
+	"errors":	0,
+	"warnings":	0
+}

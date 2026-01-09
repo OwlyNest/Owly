@@ -83,6 +83,8 @@ Expr *parse_primary(void) {
     Token *tok = consume();
     switch (tok->type) {
         case TOKEN_LITERAL_INT:
+        case TOKEN_LITERAL_CHAR:
+        case TOKEN_LITERAL_STRING:
         case TOKEN_LITERAL_FLOAT: {
             Expr *expr = create_expr(EXPR_LITERAL);
             expr->literal = strdup(tok->lexeme);

@@ -57,7 +57,7 @@ int is_unary_operator(Token *tok);
 int is_binary_operator(Token *tok);
 void validate_specifiers(const char **props);
 TokenType type_from_string(const char *str);
-void parser_init(void);
+Node *parser_init(void);
 Node *parse_program(void);
 Node *parse_var_decl(void);
 Node *parse_func_decl(void);
@@ -422,7 +422,7 @@ TokenType type_from_string(const char *str) {
     else if (strncmp(str, "FLOAT_LITERAL", sizeof("FLOAT_LITERAL")) == 0) return TOKEN_LITERAL_FLOAT;
 }
 
-void parser_init(void) {
+Node *parser_init(void) {
     char type_str[64];
     char buf[LINEMAX];
     FILE *tokens = fopen("list.tok", "r");
@@ -437,7 +437,7 @@ void parser_init(void) {
 
     Node *ast = parse_program();
     create_json(ast);
-    free_parser(ast);
+    return ast;
 }
 
 Node *parse_program(void) {
@@ -455,8 +455,8 @@ Node *parse_var_decl(void) {
         * var [properties] type [*]ident [= literal|identifier|&identifier]
     */
     Node *node = create_node(NODE_VAR_DECL);
-
     node->var_decl.type = parse_type();
+    node->var_decl.value = NULL;
 
     // Name
     expect(TOKEN_IDENTIFIER, "Expected variable name after type");
@@ -782,6 +782,9 @@ Node *parse_struct_decl(void) {
         node->struct_decl.name = strdup(consume()->lexeme);
     }
 
+    if (peek()->type == TOKEN_IDENTIFIER) {
+        consume();
+    }
     expect(TOKEN_SEMICOLON, "Expected ';' after struct declaration");
     consume();
 

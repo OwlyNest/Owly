@@ -31,6 +31,8 @@ while [[ "$1" == -* ]]; do
 done
 
 SOURCE="$1"
+cat "${SOURCE}"
+printf "\n"
 if [ -z "$SOURCE" ]; then
   echo "Input file missing"
   exit 1
@@ -41,7 +43,7 @@ CFILE="${BASENAME}.c"
 EXE="${BASENAME}"
 
 # Step 0: Compile the Owly compiler
-gcc -o owlyc3 owlyc3.c owlylexer.c parser.c memutils.c ast.c ast_to_json.c expressions.c -lcjson
+gcc -o owlyc3 owlyc3.c owlylexer.c parser.c memutils.c ast.c ast_to_json.c expressions.c SA.c SA_to_json.c -lcjson
 if [ $? -ne 0 ]; then
   echo "Failed to compile owlyc.c"
   exit 1

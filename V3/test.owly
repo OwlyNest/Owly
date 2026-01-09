@@ -1,11 +1,12 @@
-int main(void) {
+func int main(void) {
     for (int x = 0; x < 5; x++) {
         hello();
     }
-    int x = 5;
-    char *name = "Amity";
+    var int x = 5;
+    var char *name = "Amity";
 
     ret 0;
 }
-void hello(void) {
+
+func void hello(void) {
 }
