@@ -1,0 +1,9 @@
+func int main(void) {
+    arr<int> x[3] = {1, 2, 3};
+    
+    var int *ptr = &x[0];
+    var int a = *(ptr + 1);
+    var int b = *(ptr + 2);
+
+    ret a + b;
+}

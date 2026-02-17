@@ -1,0 +1,84 @@
+var int x = 1;
+func int main (int a) {}
+ret 0;
+x + 1;
+enum Color {
+    RED,
+    GREEN,
+    BLUE,
+};
+struct Point {
+    int x;
+    int y;
+};
+
+while (x < 5) {
+    continue;
+}
+
+do {
+    continue;
+} while (x < 5);
+
+for (int x = 0; x < 5; x++) {
+    continue;
+}
+
+var unsigned long register volatile int x;
+
+if (x < 5) {
+    break;
+} else if (x > 5) {
+    break;
+} else {
+    break;
+}
+
+union un {
+    int x;
+    int y;
+};
+
+switch (Point.x) {
+    case (1) {
+        break;
+    }
+    case (2) {
+        break;
+    }
+
+    default {
+        break;
+    }
+}
+
+typedef unsigned long int size_t;
+
+arr<int> x[3] = {0};
+
+x = 1;
+x = 6.6;
+x = 'C';
+x = "S";
+
+x = y;
+
+x++;
+
+x + y;
+
+(x + y);
+
+add(1, 2);
+
+x < 5 ? 1 : 2;
+
+a.x;
+
+x = sizeof(int);
+
+z = (int)y;
+
+a = { 1, 2, 3};
+
+x[1];

@@ -1,0 +1,162 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/owlyc3.o",
+      "src/owlyc3.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/owlyc3.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/owlyc3.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/memutils.o",
+      "src/memutils.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/memutils.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/memutils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/SA.o",
+      "src/SA.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/SA.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/SA.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/SA_to_json.o",
+      "src/SA_to_json.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/SA_to_json.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/SA_to_json.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/ir.o",
+      "src/ir.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/ir.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/ir.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/front/lexer.o",
+      "src/front/lexer.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/front/lexer.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/front/lexer.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/front/parser.o",
+      "src/front/parser.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/front/parser.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/front/parser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/front/expressions.o",
+      "src/front/expressions.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/front/expressions.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/front/expressions.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/front/ast.o",
+      "src/front/ast.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/front/ast.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/front/ast.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-Iinclude",
+      "-Iinclude/front",
+      "-c",
+      "-o",
+      "build/front/ast_to_json.o",
+      "src/front/ast_to_json.c"
+    ],
+    "directory": "/home/Amity/OwlyNest/Owly/V3",
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/front/ast_to_json.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/front/ast_to_json.o"
+  }
+]

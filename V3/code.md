@@ -1,68 +1,32 @@
-```owly
-int main(void) {
-    for (int x = 0; x < 5; x++) {
-        hello();
-    }
-    int x = 5;
-    char *name = "Amity";
+# TODO
 
-    ret 0;
-}
-void hello(void) {
-    // do something, comments not supported yet btw
-}
-```
-
-
-
-```
-[AST]
-└── Program
-    ├── int main()
-    |    ├── [ARGS]
-    |    |   └── void
-    |    ├──[BODY]
-    |    |   ├── for
-    |    |   |   ├── [INIT]
-    |    |   |   │    └── int x
-    |    |   |   |        └── 0
-    |    |   |   ├── [COND]
-    |    |   |   │    └── [BINOP]
-    |    |   |   |         ├── [LEFT]
-    |    |   |   |         |    └── x
-    |    |   |   |         ├── [OPERATOR]
-    |    |   |   |         |    └── <
-    |    |   |   |         └── [RIGHT]
-    |    |   |   |              └── 5
-    |    |   |   ├── [POST]
-    |    |   |   |    └── [UNOP, POST]
-    |    |   |   |         ├── [ARG]
-    |    |   |   |         |    └── x
-    |    |   |   |         └── [OPERATOR]
-    |    |   |   |              └── ++
-    |    |   |   └── [BODY]
-    |    |   |        └── hello()
-    |    |   ├── int x
-    |    |   │   └── 5
-    |    |   └── char *name
-    |    |       └── "Amity"
-    |    └── [RET]
-    |         └── 0
-    └── void hello()
-        ├── [ARGS]
-        |   └── void
-        └── [BODY]
-             └── something
-```
-
-
-/*Control flow*/
-switch case break default continue do while if else for goto
-/*Property*/
-auto register const inline long restrict short signed static unsigned volatile extern
-/*Types*/
-char double float int void _Bool _Complex _Imaginary
-/*Defines and stuff*/
-enum struct typedef union
-/*Other*/
-ret sizeof
+- [ ] 1) Make better (full) test cases for compiler modules
+  - [x] testlexer.owly
+  - [ ] testparser.owly
+  - [ ] testsa.owly
+  - [ ] testir.owly
+- [ ] 2) ADD COMMENTS TO OWLY!!!!
+- [ ] 3) Rectify module architecture in lexer
+  - [ ] return single TokenList
+  - [ ] don't remake it in the parser
+- [ ] 4) Implement global error system (or maybe global OwlyProgram system)
+  - [ ] Gaslight gcc into OOP
+- [ ] 5) Write docs
+  - [ ] README.md
+  - [ ] Maybe some Owly adventure novel or something
+  - [ ] (Finally) write the ECS
+    - [ ] $D^4$
+    - [ ] Generators
+    - [ ] PoT
+  - [ ] Update License
+- [ ] 6) Refine code
+  - [ ] owlyc3
+  - [ ] lexer
+  - [ ] parser
+  - [ ] expressions
+  - [ ] ast
+  - [ ] SA
+  - [ ] IR
+- [ ] 7) Unified debug system
+  - [ ] One unified debug-print helper for JSON trees
+  - [ ] Generate .tok .json and .ir afterwards, since `Node`s and `Expr`s get updated after parser and non-SA errors exist

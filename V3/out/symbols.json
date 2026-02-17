@@ -1,0 +1,170 @@
+{
+	"global_scope":	{
+		"type":	"global",
+		"symbols":	[{
+				"main":	{
+					"name":	"main",
+					"kind":	"function",
+					"return_type":	{
+						"TYPE":	[{
+								"storage":	"none",
+								"sign":	"none",
+								"length":	"none",
+								"const":	false,
+								"volatile":	false,
+								"inline":	false,
+								"restrict":	false,
+								"pointer_depth":	0
+							}, {
+								"base":	"int"
+							}]
+					},
+					"params":	[],
+					"resolved type":	{
+						"kind":	"function",
+						"name":	"main",
+						"base":	{
+							"kind":	"builtin",
+							"name":	"int",
+							"size":	4,
+							"align":	4,
+							"signed":	true,
+							"floating":	false
+						}
+					}
+				}
+			}],
+		"child_scopes":	[{
+				"type":	"function",
+				"name":	"main",
+				"symbols":	[{
+						"x":	{
+							"name":	"x",
+							"kind":	"variable",
+							"initialised":	1,
+							"type":	{
+								"TYPE":	[{
+										"storage":	"none",
+										"sign":	"none",
+										"length":	"none",
+										"const":	false,
+										"volatile":	false,
+										"inline":	false,
+										"restrict":	false,
+										"pointer_depth":	0
+									}, {
+										"base":	"int"
+									}]
+							},
+							"resolved type":	{
+								"kind":	"array",
+								"name":	"x",
+								"size":	12,
+								"align":	4,
+								"base":	{
+									"kind":	"builtin",
+									"name":	"int",
+									"size":	4,
+									"align":	4,
+									"signed":	true,
+									"floating":	false
+								},
+								"dimensions":	[3],
+								"total_elements":	3
+							}
+						}
+					}, {
+						"ptr":	{
+							"name":	"ptr",
+							"kind":	"variable",
+							"initialised":	1,
+							"type":	{
+								"TYPE":	[{
+										"storage":	"none",
+										"sign":	"none",
+										"length":	"none",
+										"const":	false,
+										"volatile":	false,
+										"inline":	false,
+										"restrict":	false,
+										"pointer_depth":	1
+									}, {
+										"base":	"int"
+									}]
+							},
+							"resolved type":	{
+								"kind":	"pointer",
+								"size":	8,
+								"align":	8,
+								"base":	{
+									"kind":	"builtin",
+									"name":	"int",
+									"size":	4,
+									"align":	4,
+									"signed":	true,
+									"floating":	false
+								}
+							}
+						}
+					}, {
+						"a":	{
+							"name":	"a",
+							"kind":	"variable",
+							"initialised":	1,
+							"type":	{
+								"TYPE":	[{
+										"storage":	"none",
+										"sign":	"none",
+										"length":	"none",
+										"const":	false,
+										"volatile":	false,
+										"inline":	false,
+										"restrict":	false,
+										"pointer_depth":	0
+									}, {
+										"base":	"int"
+									}]
+							},
+							"resolved type":	{
+								"kind":	"builtin",
+								"name":	"int",
+								"size":	4,
+								"align":	4,
+								"signed":	true,
+								"floating":	false
+							}
+						}
+					}, {
+						"b":	{
+							"name":	"b",
+							"kind":	"variable",
+							"initialised":	1,
+							"type":	{
+								"TYPE":	[{
+										"storage":	"none",
+										"sign":	"none",
+										"length":	"none",
+										"const":	false,
+										"volatile":	false,
+										"inline":	false,
+										"restrict":	false,
+										"pointer_depth":	0
+									}, {
+										"base":	"int"
+									}]
+							},
+							"resolved type":	{
+								"kind":	"builtin",
+								"name":	"int",
+								"size":	4,
+								"align":	4,
+								"signed":	true,
+								"floating":	false
+							}
+						}
+					}]
+			}]
+	},
+	"errors":	0,
+	"warnings":	0
+}

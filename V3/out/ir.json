@@ -1,0 +1,309 @@
+{
+	"source":	"tests/testsa.owly",
+	"functions":	[{
+			"name":	"main",
+			"blocks":	[{
+					"id":	0,
+					"name":	"entry",
+					"instructions":	[{
+							"op":	"alloca",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t0"
+							},
+							"size":	12,
+							"align":	4
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t1"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t0"
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	0
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	1
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t1"
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t2"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t0"
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	4
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	2
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t2"
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t3"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t0"
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	8
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	3
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t3"
+							}
+						}, {
+							"op":	"alloca",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t4"
+							},
+							"size":	8,
+							"align":	8
+						}, {
+							"op":	"mul",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t5"
+							},
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	0
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	4
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t6"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t0"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t5"
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t6"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t4"
+							}
+						}, {
+							"op":	"alloca",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t7"
+							},
+							"size":	4,
+							"align":	4
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t8"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t4"
+							}
+						}, {
+							"op":	"mul",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t9"
+							},
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	1
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	4
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t10"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t8"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t9"
+							}
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t11"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t10"
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t11"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t7"
+							}
+						}, {
+							"op":	"alloca",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t12"
+							},
+							"size":	4,
+							"align":	4
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t13"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t4"
+							}
+						}, {
+							"op":	"mul",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t14"
+							},
+							"arg1":	{
+								"kind":	"const_int",
+								"value":	2
+							},
+							"arg2":	{
+								"kind":	"const_int",
+								"value":	4
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t15"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t13"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t14"
+							}
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t16"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t15"
+							}
+						}, {
+							"op":	"store",
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t16"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t12"
+							}
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t17"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t7"
+							}
+						}, {
+							"op":	"load",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t18"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t12"
+							}
+						}, {
+							"op":	"add",
+							"dest":	{
+								"kind":	"temp",
+								"name":	"%t19"
+							},
+							"arg1":	{
+								"kind":	"temp",
+								"name":	"%t17"
+							},
+							"arg2":	{
+								"kind":	"temp",
+								"name":	"%t18"
+							}
+						}, {
+							"op":	"return",
+							"value":	{
+								"kind":	"temp",
+								"name":	"%t19"
+							}
+						}]
+				}]
+		}]
+}

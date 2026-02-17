@@ -1,4 +1,0 @@
-typedef enum E {
-    X = 1
-};
-var int X;

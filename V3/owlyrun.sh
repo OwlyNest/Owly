@@ -1,17 +1,17 @@
-
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
   echo "Usage: $0 [--verbose|-v] [--nodelete|-n] [--debug|-d] <file.owly>"
   exit 1
 fi
+
 VERBOSE=0
 NODELETE=0
 DEBUG=0
 
 while [[ "$1" == -* ]]; do
   case "$1" in
-      -v|--verbose)
+    -v|--verbose)
       VERBOSE=1
       shift
       ;;
@@ -31,55 +31,45 @@ while [[ "$1" == -* ]]; do
 done
 
 SOURCE="$1"
-cat "${SOURCE}"
-printf "\n"
+
 if [ -z "$SOURCE" ]; then
   echo "Input file missing"
   exit 1
 fi
 
+if [ ! -f "$SOURCE" ]; then
+  echo "File not found: $SOURCE"
+  exit 1
+fi
+
+cat "$SOURCE"
+printf "\n"
+
 BASENAME="${SOURCE%.owly}"
-CFILE="${BASENAME}.c"
-EXE="${BASENAME}"
-
-# Step 0: Compile the Owly compiler
-gcc -o owlyc3 owlyc3.c owlylexer.c parser.c memutils.c ast.c ast_to_json.c expressions.c SA.c SA_to_json.c -lcjson
+# Step 0: Build the Owly compiler
+bear -- make clean
+bear -- make
 if [ $? -ne 0 ]; then
-  echo "Failed to compile owlyc.c"
+  echo "Failed to build owlyc3"
   exit 1
 fi
 
-# Step 1: Compile Owly source to C
+# Step 1: Compile Owly → C
 if [ $DEBUG -eq 1 ]; then
-  ./owlyc3 "$SOURCE" "$CFILE" -d
+  ./owlyc3 "$SOURCE" -d
 else
-  ./owlyc3 "$SOURCE" "$CFILE"
+  ./owlyc3 "$SOURCE"
 fi
-
 
 if [ $? -ne 0 ]; then
-  echo "Owly compilation failed"
+  echo "[X] Owly compilation failed"
   exit 1
+else 
+  echo "[X] Owly compilation successful"
 fi
 
-if [ $VERBOSE -eq 1 ]; then
-  code "$CFILE"
-fi
 
-# Step 2: Compile generated C to executable
-gcc -o "$EXE" "$CFILE"
-if [ $? -ne 0 ]; then
-  echo "C compilation failed"
-  exit 1
-fi
-
-# Step 3: Run the resulting executable
-echo "Running $EXE.owly"
-./"$EXE"
-
-# Step 4: Clean up intermediate files. Always remove <owly>.c file
-rm -f "$CFILE"
-# Optionally keep executable files
+exit 0
 if [ $NODELETE -eq 0 ]; then
-  rm -f "$EXE" "owlyc3"
+  bear -- make clean
 fi

@@ -1,0 +1,26 @@
+auto arr register break case char const continue default do double else enum
+extern float for func goto if inline int long register restrict ret short signed
+sizeof static struct switch typedef union unsigned var void volatile while _Bool _Complex _Imaginary
+$
+184594917 0xB00B1E5 0b1011000000001011000111100101 3.14159 6.626e-34 0xC0FFEE
+@
+() {} []
+`
+"This is a string!"
+'C'
+'\n'
++ ++ +=
+- -- -= ->
+*    *=
+/    /=
+%    %=
+=    ==
+!    !=
+^    ^=
+> >> >= >>=
+< << <= <<=
+& && &=
+| || |=
+~
+. ...
+,;:?#
