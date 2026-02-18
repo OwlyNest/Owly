@@ -1,5 +1,5 @@
 /*
-	* include/lexer.h - [Enter description]
+	* include/lexer.h - Token definitions and list. Owly's dictionary of every possible word.
 	* Author:   Amity
 	* Date:     Mon Feb 16 15:05:09 2026
 	* Copyright © 2026 OwlyNest

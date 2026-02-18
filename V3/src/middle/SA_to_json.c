@@ -1,5 +1,5 @@
 /*
-	* SA_to_json.c - [Enter description]
+	* SA_to_json.c - Symbols & types to JSON. Owly bragging about her understanding.
 	* Author:   Amity
 	* Date:     Wed Dec 24 00:14:17 2025
 	* Copyright © 2025 OwlyNest
@@ -22,9 +22,9 @@
 /* --- Macros ---*/
 
 /* --- Includes ---*/
-#include "SA.h"
-#include "front/ast_to_json.h"
 #include <cjson/cJSON.h>
+#include "front/ast_to_json.h"
+#include "middle/SA.h"
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/

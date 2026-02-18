@@ -1,5 +1,5 @@
 /*
-	* parser.c - Owly Parser
+	* parser.c - Parser: builds the AST. Owly's grammar police — strict but fair.
 	* Author:   Amity
 	* Date:     Wed Oct 29 14:59:59 2025
 	* Copyright © 2025 OwlyNest
@@ -23,17 +23,17 @@
 #define LINEMAX 1024
 #define MAX_TOKENS 1024
 /* --- Includes ---*/
-#include "front/parser.h"
-#include "memutils.h"
-#include "front/lexer.h"
-#include "front/ast.h"
-#include "front/ast_to_json.h"
-#include "front/expressions.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cjson/cJSON.h>
+
+#include "front/parser.h"
+#include "front/lexer.h"
+#include "front/ast.h"
+#include "front/ast_to_json.h"
+#include "front/expressions.h"
+#include "memutils.h"
 /* --- Globals ---*/
 Token token_list[MAX_TOKENS];
 size_t token_count = 0;

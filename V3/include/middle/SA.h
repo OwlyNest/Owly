@@ -1,5 +1,5 @@
 /*
-	* SA.h - [Enter description]
+	* SA.h - Semantic analyzer types. Owly's rulebook for "does this even make sense?"
 	* Author:   Amity
 	* Date:     Mon Dec 22 16:57:43 2025
 	* Copyright © 2025 OwlyNest
@@ -23,10 +23,10 @@
 #ifndef SA_H
 #define SA_H
 /* --- Includes ---*/
+#include <cjson/cJSON.h>
+
 #include "front/ast.h"
 #include "front/expressions.h"
-
-#include <cjson/cJSON.h>
 /* --- Typedefs - Structs - Enums ---*/
 typedef struct {
     ResolvedType *type;

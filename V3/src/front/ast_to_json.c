@@ -1,5 +1,5 @@
 /*
-	* ast_to_json.c - [Enter description]
+	* ast_to_json.c - AST to JSON dumper. For when Owly wants to show off her tree to the world.
 	* Author:   Amity
 	* Date:     Thu Oct 30 14:51:57 2025
 	* Copyright © 2025 OwlyNest

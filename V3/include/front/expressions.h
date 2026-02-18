@@ -1,5 +1,5 @@
 /*
-	* expressions.h - header file for expressions
+	* expressions.h - Expression structs. Owly's math & logic playground.
 	* Author:   Amity
 	* Date:     Sat Nov  1 16:51:21 2025
 	* Copyright © 2025 OwlyNest

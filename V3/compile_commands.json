@@ -6,6 +6,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/owlyc3.o",
@@ -22,6 +23,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/memutils.o",
@@ -38,14 +40,15 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
-      "build/SA.o",
-      "src/SA.c"
+      "build/middle/SA.o",
+      "src/middle/SA.c"
     ],
     "directory": "/home/Amity/OwlyNest/Owly/V3",
-    "file": "/home/Amity/OwlyNest/Owly/V3/src/SA.c",
-    "output": "/home/Amity/OwlyNest/Owly/V3/build/SA.o"
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/middle/SA.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/middle/SA.o"
   },
   {
     "arguments": [
@@ -54,14 +57,15 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
-      "build/SA_to_json.o",
-      "src/SA_to_json.c"
+      "build/middle/SA_to_json.o",
+      "src/middle/SA_to_json.c"
     ],
     "directory": "/home/Amity/OwlyNest/Owly/V3",
-    "file": "/home/Amity/OwlyNest/Owly/V3/src/SA_to_json.c",
-    "output": "/home/Amity/OwlyNest/Owly/V3/build/SA_to_json.o"
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/middle/SA_to_json.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/middle/SA_to_json.o"
   },
   {
     "arguments": [
@@ -70,14 +74,15 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
-      "build/ir.o",
-      "src/ir.c"
+      "build/middle/ir.o",
+      "src/middle/ir.c"
     ],
     "directory": "/home/Amity/OwlyNest/Owly/V3",
-    "file": "/home/Amity/OwlyNest/Owly/V3/src/ir.c",
-    "output": "/home/Amity/OwlyNest/Owly/V3/build/ir.o"
+    "file": "/home/Amity/OwlyNest/Owly/V3/src/middle/ir.c",
+    "output": "/home/Amity/OwlyNest/Owly/V3/build/middle/ir.o"
   },
   {
     "arguments": [
@@ -86,6 +91,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/front/lexer.o",
@@ -102,6 +108,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/front/parser.o",
@@ -118,6 +125,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/front/expressions.o",
@@ -134,6 +142,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/front/ast.o",
@@ -150,6 +159,7 @@
       "-Wextra",
       "-Iinclude",
       "-Iinclude/front",
+      "-Iinclude/middle",
       "-c",
       "-o",
       "build/front/ast_to_json.o",

@@ -1,5 +1,5 @@
 /*
-	* ast.h - header for ast objects
+	* ast.h - Core AST node. The tree Owly builds in her head.
 	* Author:   Amity
 	* Date:     Thu Oct 30 00:43:29 2025
 	* Copyright © 2025 OwlyNest

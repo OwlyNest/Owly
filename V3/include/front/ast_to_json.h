@@ -1,5 +1,5 @@
 /*
-	* ast_to_json.h - [Enter description]
+	* ast_to_json.h - AST → JSON helpers. For pretty-printing Owly's thoughts
 	* Author:   Amity
 	* Date:     Thu Oct 30 14:59:18 2025
 	* Copyright © 2025 OwlyNest

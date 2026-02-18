@@ -1,5 +1,5 @@
 /*
-	* src/owlyc3.c - [Enter description]
+	* src/owlyc3.c - The main driver. Owly wakes up here, reads your code, and tries not to judge too hard.
 	* Author:   Amity
 	* Date:     Tue Feb 17 09:50:44 2026
 	* Copyright © 2026 OwlyNest
@@ -23,15 +23,16 @@
 
 /* --- Includes ---*/
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdx/stdx_json_to_tree.h>
 
 #include "front/lexer.h"
-#include "parser.h"
+#include "front/parser.h"
+#include "middle/SA.h"
+#include "middle/ir.h"
 #include "memutils.h"
-#include "SA.h"
-#include "ir.h"
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/
@@ -39,7 +40,7 @@ const char* name;
 int debug = 0;
 /* --- Prototypes ---*/
 int main(int argc, char *argv[]);
-void scan(const char *source);
+void spill_debug();
 /* --- Main ---*/
 int main(int argc, char *argv[]) {
     FILE *f = fopen("out/list.tok", "w");
@@ -85,11 +86,7 @@ int main(int argc, char *argv[]) {
     IRModule *ir = generate_ir(ast, ctx);
 
     /* Debug output only in main, no stray prints in different files*/
-    if (debug) {
-        json_file_to_tree("[AST]", "out/ast.json", stdout);
-        json_file_to_tree("[ST]", "out/symbols.json", stdout);
-        json_file_to_tree("[IR]", "out/ir.json", stdout);
-    }
+    spill_debug();
 
     int result = ctx->error_count > 0 ? 1 : 0;
 
@@ -103,3 +100,22 @@ int main(int argc, char *argv[]) {
 }
 /* --- Functions ---*/
 
+void spill_debug() {
+    if (!debug) {
+        puts("[Owly]: Silent mode engaged. Check out/ for the juicy bits. Hoot!");
+        return;
+    }
+
+    puts("\n[Owly] AST tree incoming...\n");
+    json_file_to_tree("[AST]", "out/ast.json", stdout);
+
+    puts("\n[Owly] Symbol table hoot...\n");
+    json_file_to_tree("[ST]", "out/symbols.json", stdout);
+
+    puts("\n[Owly] Raw IR; let's see what chaos we brewed:");
+    if (system("cat out/ir.ir") != 0) {
+        puts("[Owly] No IR file? The void stares back... 🪶");
+    }
+
+    putchar('\n');
+}

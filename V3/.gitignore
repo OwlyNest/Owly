@@ -1,0 +1,12 @@
+.vscode/
+.cache/
+.github/
+
+build/
+out/
+
+code.md
+compile_commands.json
+output.c
+owlyc3
+

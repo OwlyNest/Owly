@@ -1,5 +1,5 @@
 /*
-	* src/ir.c - [Enter description]
+	* src/ir.c - IR generator. Owly translating beautiful AST into cold, efficient instructions.
 	* Author:   Amity
 	* Date:     Wed Feb  4 01:04:12 2026
 	* Copyright © 2026 OwlyNest
@@ -22,17 +22,17 @@
 /* --- Macros ---*/
 
 /* --- Includes ---*/
-#include "ir.h"
-#include "SA.h"
-#include "front/ast.h"
-#include "front/expressions.h"
-#include "memutils.h"
-
 #include <cjson/cJSON.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "front/ast.h"
+#include "front/expressions.h"
+#include "middle/ir.h"
+#include "middle/SA.h"
+#include "memutils.h"
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/

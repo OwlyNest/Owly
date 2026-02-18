@@ -1,16 +1,35 @@
+/*
+	* include/front/parser.h - parser prototypes. Owly's grammar blueprint.
+	* Author:   Amity
+	* Date:     Wed Feb 18 09:00:30 2026
+	* Copyright © 2026 OwlyNest
+*/
 
+/* --- Styling Instructions ---
+	* Encoding:                      UTF-8, Unix line endings
+	* Text font:                     Monospace
+	* Line width:                    Max 80 characters
+	* Indentation:                   Use 4 spaces
+	* Brace style:                   Same line as control statement
+	* Inline comments:               Column 40, wherever possible, else, whole multiple of 20
+	* Section headers:               Use 3 '-' characters before and after
+	* Pointer notation:              Next to variable name, not type
+	* Binary operations:             Space around operator
+	* Empty parameter list:          Use (void) instead of ()
+	* Statements and declarations:   Max one per line
+*/
+
+/* --- Macros ---*/
 #ifndef PARSER_H
 #define PARSER_H
-
+/* --- Includes ---*/
 #include "lexer.h"
 #include "ast.h"
+/* --- Typedefs - Structs - Enums ---*/
 
-typedef struct {
-    Token *tokens;
-    size_t count;
-    size_t pos;
-} Parser;
+/* --- Globals ---*/
 
+/* --- Prototypes ---*/
 void parser_error(const char *msg, Token *t);
 Token *peek(void);
 Token *peek_next(void);

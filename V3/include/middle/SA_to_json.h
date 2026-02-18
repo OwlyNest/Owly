@@ -1,5 +1,5 @@
 /*
-	* SA_to_json.h - [Enter description]
+	* SA_to_json.h - Symbol table → JSON. Owly showing her work.
 	* Author:   Amity
 	* Date:     Wed Dec 24 00:14:19 2025
 	* Copyright © 2025 OwlyNest
@@ -23,8 +23,8 @@
 #ifndef SA_TO_JSON_H
 #define SA_TO_JSON_H
 /* --- Includes ---*/
-#include "SA.h"	
 #include <cjson/cJSON.h>
+#include "SA.h"	
 
 /* --- Typedefs - Structs - Enums ---*/
 

@@ -1,5 +1,5 @@
 /*
-	* expressions.c - [Enter description]
+	* expressions.c - Expression parser. Owly figuring out if 1 + 2 * x means what you think it means.
 	* Author:   Amity
 	* Date:     Sat Nov  1 16:51:23 2025
 	* Copyright © 2025 OwlyNest
@@ -22,14 +22,14 @@
 /* --- Macros ---*/
 
 /* --- Includes ---*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "front/expressions.h"
 #include "front/parser.h"
 #include "front/lexer.h"
 #include "memutils.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/

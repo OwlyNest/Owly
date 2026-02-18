@@ -1,5 +1,5 @@
 /*
-	* SA.c - [Enter description]
+	* SA.c - Semantic analyzer. Owly's inner critic: "This type doesn't match, darling."
 	* Author:   Amity
 	* Date:     Mon Dec 22 16:57:49 2025
 	* Copyright © 2025 OwlyNest
@@ -22,11 +22,12 @@
 /* --- Macros ---*/
 
 /* --- Includes ---*/
-#include "SA.h"
+
 #include "front/ast.h"
 #include "front/expressions.h"
+#include "middle/SA.h"
+#include "middle/SA_to_json.h"
 #include "memutils.h"
-#include "SA_to_json.h"
 
 
 #include <stdio.h>

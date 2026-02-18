@@ -1,5 +1,5 @@
 CC      := gcc
-CFLAGS  := -Wall -Wextra -Iinclude -Iinclude/front
+CFLAGS  := -Wall -Wextra -Iinclude -Iinclude/front -Iinclude/middle
 LDFLAGS := -lcjson -lstdx
 
 SRC_DIR := src
@@ -9,9 +9,9 @@ BIN     := owlyc3
 SRCS := \
 	$(SRC_DIR)/owlyc3.c \
 	$(SRC_DIR)/memutils.c \
-	$(SRC_DIR)/SA.c \
-	$(SRC_DIR)/SA_to_json.c \
-	$(SRC_DIR)/ir.c \
+	$(SRC_DIR)/middle/SA.c \
+	$(SRC_DIR)/middle/SA_to_json.c \
+	$(SRC_DIR)/middle/ir.c \
 	$(SRC_DIR)/front/lexer.c \
 	$(SRC_DIR)/front/parser.c \
 	$(SRC_DIR)/front/expressions.c \
@@ -31,7 +31,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR) $(OBJ_DIR)/front
+	mkdir -p $(OBJ_DIR) $(OBJ_DIR)/front $(OBJ_DIR)/middle $(OBJ_DIR)/back
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@

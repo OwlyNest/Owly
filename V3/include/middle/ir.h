@@ -1,5 +1,5 @@
 /*
-	* include/ir.h - [Enter description]
+	* include/ir.h - IR module and instructions. Owly's low-level poetry.
 	* Author:   Amity
 	* Date:     Wed Feb  4 01:04:19 2026
 	* Copyright © 2026 OwlyNest
@@ -20,11 +20,10 @@
 */
 
 /* --- Macros ---*/
-
-/* --- Includes ---*/
-
 #ifndef IR_H
 #define IR_H
+/* --- Includes ---*/
+
 #include "SA.h"
 /* --- Typedefs - Structs - Enums ---*/
 

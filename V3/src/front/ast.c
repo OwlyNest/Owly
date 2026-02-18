@@ -1,5 +1,5 @@
 /*
-	* ast.c - [Enter description]
+	* ast.c - AST nodes and freeing. Owly's treehouse, beautiful but needs regular cleaning.
 	* Author:   Amity
 	* Date:     Thu Oct 30 01:24:29 2025
 	* Copyright © 2025 OwlyNest
@@ -23,8 +23,8 @@
 
 /* --- Includes ---*/
 #include "front/ast.h"
-#include "memutils.h"
 #include "front/expressions.h"
+#include "memutils.h"
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/

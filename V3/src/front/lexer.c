@@ -1,5 +1,5 @@
 /*
-	* src/front/lexer.c - Owly's tokenizer: turns text into shiny tokens
+	* src/front/lexer.c - Owly's tokenizer: turns text into shiny tokens. Owly's eagle eyes spotting keywords and operators.
 	* Author:   Amity
 	* Date:     Tue Feb 17 09:58:17 2026
 	* Copyright © 2026 OwlyNest

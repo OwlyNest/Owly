@@ -1,32 +1,17 @@
 # TODO
 
-- [ ] 1) Make better (full) test cases for compiler modules
-  - [x] testlexer.owly
-  - [ ] testparser.owly
-  - [ ] testsa.owly
-  - [ ] testir.owly
-- [ ] 2) ADD COMMENTS TO OWLY!!!!
-- [ ] 3) Rectify module architecture in lexer
-  - [ ] return single TokenList
-  - [ ] don't remake it in the parser
-- [ ] 4) Implement global error system (or maybe global OwlyProgram system)
-  - [ ] Gaslight gcc into OOP
-- [ ] 5) Write docs
-  - [ ] README.md
-  - [ ] Maybe some Owly adventure novel or something
-  - [ ] (Finally) write the ECS
-    - [ ] $D^4$
-    - [ ] Generators
-    - [ ] PoT
-  - [ ] Update License
-- [ ] 6) Refine code
-  - [ ] owlyc3
-  - [ ] lexer
-  - [ ] parser
-  - [ ] expressions
-  - [ ] ast
-  - [ ] SA
-  - [ ] IR
-- [ ] 7) Unified debug system
-  - [ ] One unified debug-print helper for JSON trees
-  - [ ] Generate .tok .json and .ir afterwards, since `Node`s and `Expr`s get updated after parser and non-SA errors exist
+- [x] 1) Improve project structure
+  - [x] create front/
+  - [x] create middle/
+  - [x] create back/
+- [ ] 2) write file descriptions
+  - [ ] src/
+    - [x] ./
+    - [x] front/
+    - [x] middle/
+    - [x] back/
+  - [x] include/
+    - [x] ./
+    - [x] front/
+    - [x] middle/
+    - [x] back/
