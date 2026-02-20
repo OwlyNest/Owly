@@ -145,6 +145,7 @@ void free_ast(Node *node) {
             for (size_t i = 0; node->for_stmt.body[i]; i++) {
                 free_ast(node->for_stmt.body[i]);
             }
+            xfree(node->for_stmt.body);
             break;
 
         case NODE_TYPE:

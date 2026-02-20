@@ -28,28 +28,44 @@
 #include <stdio.h>
 
 #include "front/lexer.h"
+#include "memutils.h"
 /* --- Typedefs - Structs - Enums ---*/
 
 /* --- Globals ---*/
 extern int debug;
 /* --- Prototypes ---*/
-void scan(const char *source);
+TokenList *scan(const char *source);
 const char* token_type_to_string(TokenType type);
-void print_token(Token tok, int debug);
+void save_tokens(TokenList *list);
+void print_token(Token tok);
 char current_char(void);
 void advance(void);
 void lexer_init(const char *source_code);
 void skip_whitespace(void);
-Token lexer_next_token(int debug);
+Token lexer_next_token();
+void free_token_list(TokenList *list);
 /* --- Functions ---*/
 
-void scan(const char *source) {
+TokenList *scan(const char *source) {
     lexer_init(source);
+
+    TokenList *list = xcalloc(1, sizeof(TokenList));
+    list->capacity = 256;
+    list->tokens = xmalloc(list->capacity * sizeof(Token));
+    list->count = 0;
 
     Token tok;
     do {
-        tok = lexer_next_token(debug);
+        tok = lexer_next_token();
+        if (list-> count >= list->capacity) {
+            list->capacity *= 2;
+            list->tokens = xrealloc(list->tokens, list->capacity * sizeof(Token));
+        }
+        list->tokens[list->count++] = tok;
     } while (tok.type != TOKEN_EOF);
+
+    save_tokens(list);
+    return list;
 }
 
 const char* token_type_to_string(TokenType type) {
@@ -157,7 +173,17 @@ const char* token_type_to_string(TokenType type) {
     }
 }
 
-void print_token(Token tok, int debug) {
+void save_tokens(TokenList *list) {
+    FILE *tokfile = fopen("out/list.tok", "w");
+    for (size_t i = 0; i < list->count; i++) {
+        const char* type_str = token_type_to_string(list->tokens[i].type);
+        int lexeme_len = (int)list->tokens[i].length;
+        fprintf(tokfile, "%s, \"%.*s\";\n", type_str, lexeme_len, list->tokens[i].lexeme);
+    }
+    fclose(tokfile);
+}
+
+void print_token(Token tok) {
     const char* type_str = token_type_to_string(tok.type);
     int lexeme_len = (int)tok.length;
     
@@ -169,12 +195,7 @@ void print_token(Token tok, int debug) {
     int padding = MAX_DEBUG_LINE_WIDTH - n;
     if (padding < 0) padding = 0;
 
-    if (debug) {
-        printf("[DEBUG]: %s%*s}\n", buffer, padding, "");
-    }
-    FILE *tokfile = fopen("out/list.tok", "a");
-    fprintf(tokfile, "%s, \"%.*s\";\n", type_str, lexeme_len, tok.lexeme);
-    fclose(tokfile);
+    printf("[DEBUG]: %s%*s}\n", buffer, padding, "");
 }
 
 static const char *src = NULL;
@@ -198,7 +219,7 @@ void skip_whitespace(void) {
     while (isspace(current_char())) advance();
 }
 
-Token lexer_next_token(int debug) {
+Token lexer_next_token() {
     // First, skip whitespace BEFORE printing debug or anything else
     skip_whitespace();
 
@@ -206,9 +227,9 @@ Token lexer_next_token(int debug) {
     if (current_char() == '\0') {
         Token tok;
         tok.type = TOKEN_EOF;
-        tok.lexeme = "";
-        tok.length = 0;
-        print_token(tok, debug);
+        tok.length = 1;
+        tok.lexeme = strndup("~", tok.length);
+        
         return tok;
     }
 
@@ -221,8 +242,8 @@ Token lexer_next_token(int debug) {
     if (isalpha(current_char()) || current_char() == '_') {
         while (isalnum(current_char()) || current_char() == '_') advance();
         tok.type = TOKEN_IDENTIFIER;
-        tok.lexeme = start;
         tok.length = &src[pos] - start;
+        tok.lexeme = strndup(start, tok.length);
 
         // Keywords check
         if (tok.length == 3 && strncmp(start, "arr", 3) == 0 ) {
@@ -304,7 +325,7 @@ Token lexer_next_token(int debug) {
         else if (tok.length == 10 && strncmp(start, "_Imaginary", 10) == 0)
             tok.type = TOKEN_KEYWORD_IMAGINARY;
 
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -356,9 +377,9 @@ Token lexer_next_token(int debug) {
 
         // Optional suffixes (u, l, f, etc.) — skip but don’t classify yet
         while (isalpha(current_char())) advance();
-        tok.lexeme = start;
         tok.length = &src[pos] - start;
-        print_token(tok, debug);
+        tok.lexeme = strndup(start, tok.length);
+        
         return tok;
     }   
 
@@ -378,9 +399,9 @@ Token lexer_next_token(int debug) {
         
         if (current_char() == '\'') advance(); // skip closing quote
         tok.type = TOKEN_LITERAL_CHAR;
-        tok.lexeme = character;
         tok.length = len;
-        print_token(tok, debug);
+        tok.lexeme = strndup(character, tok.length);
+        
         return tok;
     }
 
@@ -395,9 +416,9 @@ Token lexer_next_token(int debug) {
         if (current_char() == '"') advance(); // skip closing quote
 
         tok.type = TOKEN_LITERAL_STRING;
-        tok.lexeme = str_start;
         tok.length = len;
-        print_token(tok, debug);
+        tok.lexeme = strndup(str_start, tok.length);
+        
         return tok;
     }
 
@@ -406,23 +427,23 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "+", 1) == 0) {
             tok.type = TOKEN_OPERATOR_INCREMENT;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_PLUSASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_PLUS;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -430,23 +451,23 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "&", 1) == 0) {
             tok.type = TOKEN_OPERATOR_AND;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_BITANDASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_AMP;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -454,32 +475,32 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "|", 1) == 0) {
             tok.type = TOKEN_OPERATOR_OR;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_BITORASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_BITOR;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
     if (current_char() == '~') {
         tok.type = TOKEN_OPERATOR_BITNOT;
-        tok.lexeme = &src[pos];
         tok.length = 1;
+        tok.lexeme = strndup(&src[pos], tok.length);
         advance();
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -487,29 +508,30 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "-", 1) == 0) {
             tok.type = TOKEN_OPERATOR_DECREMENT;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_MINUSASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, ">", 1) == 0) {
             tok.type = TOKEN_OPERATOR_ARROW;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
+
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_MINUS;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -517,17 +539,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_STARASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_STAR;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -535,17 +557,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_SLASHASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_SLASH;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -553,17 +575,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_PERCENTASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_PERCENT;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -571,17 +593,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_EQUAL;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_ASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -589,17 +611,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_NEQUAL;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_NOT;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -607,17 +629,17 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos+1];
         if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_BITXORASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_BITXOR;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -625,30 +647,30 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, ">=", 2) == 0) {
             tok.type = TOKEN_OPERATOR_BITSHRASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 3;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_GEQ;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, ">", 1) == 0) {
             tok.type = TOKEN_OPERATOR_BITSHR;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_GREATER;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -656,30 +678,30 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "<=", 2) == 0) {
             tok.type = TOKEN_OPERATOR_BITSHLASSIGN;
-            tok.lexeme = &src[pos];
             tok.length = 3;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
             advance();
         } else if (strncmp(next, "=", 1) == 0) {
             tok.type = TOKEN_OPERATOR_LEQ;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else if (strncmp(next, "<", 1) == 0) {
             tok.type = TOKEN_OPERATOR_BITSHL;
-            tok.lexeme = &src[pos];
             tok.length = 2;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_LOWER;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -687,18 +709,18 @@ Token lexer_next_token(int debug) {
         const char *next = &src[pos + 1];
         if (strncmp(next, "..", 2) == 0) {
             tok.type = TOKEN_OPERATOR_ELLIPSIS;
-            tok.lexeme = &src[pos];
             tok.length = 3;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
             advance();
             advance();
         } else {
             tok.type = TOKEN_OPERATOR_POINT;
-            tok.lexeme = &src[pos];
             tok.length = 1;
+            tok.lexeme = strndup(&src[pos], tok.length);
             advance();
         }
-        print_token(tok, debug);
+        
         return tok;
     }
 
@@ -717,8 +739,20 @@ Token lexer_next_token(int debug) {
     else {tok.type = TOKEN_UNKNOWN;}
     const char *symbol = &src[pos];
     advance();
-    tok.lexeme = symbol;
     tok.length = 1;
-    print_token(tok, debug);
+    tok.lexeme = strndup(symbol, tok.length);
+    
     return tok;
+}
+
+void free_token_list(TokenList *list) {
+    if (!list) return;
+    for (size_t i = 0; i < list->count; i++) {
+        if (list->tokens[i].lexeme) {
+            xfree((void *)list->tokens[i].lexeme);
+        }
+    }
+    xfree(list->tokens);
+    xfree(list);
+    printf("[X] Freed token list successfully\n");
 }

@@ -91,8 +91,13 @@ Literal *create_literal(Token *tok) {
 }
 
 void free_literal(Literal *lit) {
-	if (!lit) return;
-	
+    if (!lit) return;
+    xfree(lit->raw);
+    if (lit->kind && *lit->kind == LIT_STRING) {
+        xfree(lit->string_val);
+    }
+    xfree(lit->kind);
+    xfree(lit);
 }
 
 Expr *parse_expr(void) {
@@ -441,7 +446,7 @@ void free_expr(Expr *expr) {
             free_literal(expr->literal);
             break;
         case EXPR_IDENTIFIER:
-            free_literal(expr->literal);
+            xfree(expr->identifier);
             break;
         case EXPR_GROUPING:
             free_expr(expr->group.expr);

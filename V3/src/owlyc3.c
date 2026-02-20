@@ -40,11 +40,9 @@ const char* name;
 int debug = 0;
 /* --- Prototypes ---*/
 int main(int argc, char *argv[]);
-void spill_debug();
+void spill_debug(TokenList *list);
 /* --- Main ---*/
 int main(int argc, char *argv[]) {
-    FILE *f = fopen("out/list.tok", "w");
-    fclose(f);
     if (argc < 2 || argc > 3) {
         fprintf(stderr, "Usage: %s <input.owly> [-d]\n", argv[0]);
         fprintf(stderr, "  Owly demands a file to hoot at. Optional -d for maximum drama.\n");
@@ -70,14 +68,14 @@ int main(int argc, char *argv[]) {
 
     if (argc == 3 && strcmp(argv[2], "-d") == 0) {
         debug = 1;
-		fprintf(stderr, "[Owly] Debug mode activated. Prepare for verbose hooting.\n");
+		fprintf(stderr, "\n[Owly] Debug mode activated. Prepare for verbose hooting.\n\n");
     }
 
     // Lexer
-    scan(source);
+    TokenList *list = scan(source);
 
     // Parser
-    Node *ast = parser_init();
+    Node *ast = parser_init(list);
 
     // Semantic Analyzer
     SemanticContext *ctx = analyze_semantics(ast);
@@ -86,11 +84,12 @@ int main(int argc, char *argv[]) {
     IRModule *ir = generate_ir(ast, ctx);
 
     /* Debug output only in main, no stray prints in different files*/
-    spill_debug();
+    spill_debug(list);
 
     int result = ctx->error_count > 0 ? 1 : 0;
 
     /* Free everything right here */
+    free_token_list(list);
     free_parser(ast);
     free_semantic_context(ctx);
     ir_free_module(ir);
@@ -100,13 +99,17 @@ int main(int argc, char *argv[]) {
 }
 /* --- Functions ---*/
 
-void spill_debug() {
+void spill_debug(TokenList *list) {
     if (!debug) {
-        puts("[Owly]: Silent mode engaged. Check out/ for the juicy bits. Hoot!");
+        puts("\n[Owly]: Silent mode engaged. Check out/ for the juicy bits. Hoot!\n");
         return;
     }
 
-    puts("\n[Owly] AST tree incoming...\n");
+    printf("\n[Owly] Hoot! I've lexed %zu tokens\n\n", list->count);
+    for (size_t i = 0; i < list->count; i++) {
+        print_token(list->tokens[i]);
+    }
+    puts("\n[Owly] AST tree incoming; time to build a nest...\n");
     json_file_to_tree("[AST]", "out/ast.json", stdout);
 
     puts("\n[Owly] Symbol table hoot...\n");

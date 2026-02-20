@@ -20,8 +20,6 @@
 */
 
 /* --- Macros ---*/
-#define LINEMAX 1024
-#define MAX_TOKENS 1024
 /* --- Includes ---*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,14 +33,14 @@
 #include "front/expressions.h"
 #include "memutils.h"
 /* --- Globals ---*/
-Token token_list[MAX_TOKENS];
+Token *token_list = NULL;
 size_t token_count = 0;
 size_t pos = 0;
 
 extern int debug;
 /* --- Protypes --- */
 void parser_error(const char *msg, Token *t);
- Token *peek(void);
+Token *peek(void);
 Token *peek_next(void);
 Token *peek_n(int n);
 Token *consume(void);
@@ -58,7 +56,7 @@ int is_unary_operator(Token *tok);
 int is_binary_operator(Token *tok);
 void validate_specifiers(const char **props);
 TokenType type_from_string(const char *str);
-Node *parser_init(void);
+Node *parser_init(TokenList *list);
 Node *parse_program(void);
 Node *parse_var_decl(void);
 Node *parse_func_decl(void);
@@ -131,10 +129,7 @@ Token *expect(TokenType expected, const char *err_msg) {
 
 void free_parser(Node *ast) {
     free_ast(ast);
-    for (size_t i = 0; i < token_count; i++) {
-        xfree((void *)token_list[i].lexeme);
-    }
-    printf("[X] Freed AST and token list successfully\n");
+    printf("[X] Freed AST successfully\n");
 }
 
 
@@ -431,18 +426,9 @@ TokenType type_from_string(const char *str) {
     else return TOKEN_UNKNOWN;
 }
 
-Node *parser_init(void) {
-    char type_str[64];
-    char buf[LINEMAX];
-    FILE *tokens = fopen("out/list.tok", "r");
-    while (fscanf(tokens, "%63[^,], \"%[^\"]\";\n", type_str, buf) == 2) {
-        Token tok;
-        tok.type = type_from_string(type_str);
-        tok.lexeme = strdup(buf);
-        tok.length = (size_t)strlen(buf);
-        token_list[token_count++] = tok;
-    }
-    fclose(tokens);
+Node *parser_init(TokenList *list) {
+    token_list = list->tokens;
+    token_count = list->count;
 
     Node *ast = parse_program();
     create_json(ast);

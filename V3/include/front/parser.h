@@ -47,7 +47,7 @@ int is_unary_operator(Token *tok);
 int is_binary_operator(Token *tok);
 void validate_specifiers(const char **props);
 TokenType type_from_string(const char *str);
-Node *parser_init(void);
+Node *parser_init(TokenList *list);
 Node *parse_program(void);
 Node *parse_var_decl(void);
 Node *parse_func_decl(void);

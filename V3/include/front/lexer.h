@@ -143,13 +143,15 @@ typedef struct TokenList {
 /* --- Globals ---*/
 
 /* --- Prototypes ---*/
-void scan(const char *source);
+TokenList *scan(const char *source);
 const char* token_type_to_string(TokenType type);
-void print_token(Token tok, int debug);
+void save_tokens(TokenList *list);
+void print_token(Token tok);
 char current_char(void);
 void advance(void);
 void lexer_init(const char *source_code);
 void skip_whitespace();
-Token lexer_next_token(int debug);
+Token lexer_next_token();
+void free_token_list(TokenList *list);
 
 #endif
